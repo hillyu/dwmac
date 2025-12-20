@@ -48,28 +48,28 @@ private func moveTilingWindow(_ window: Window) {
     window.lastAppliedLayoutPhysicalRect = nil
     let mouseLocation = mouseLocation
     let targetWorkspace = mouseLocation.monitorApproximation.activeWorkspace
-    
+
     // Find window under cursor in target workspace
     let swapTarget = mouseLocation.findIn(workspace: targetWorkspace, virtual: false)?.takeIf { $0 != window }
-    
+
     if targetWorkspace != window.nodeWorkspace { // Move window to a different monitor
         // Calculate insertion index
         let index: Int
         if let swapTarget {
-             // In flat list, insert after or before based on orientation?
-             // Or just swap? DWM usually moves window to master when moving monitors.
-             // Or append to end.
-             // Let's use simple logic: append to end for now or next to swapTarget.
-             
-             // If we want to support insertion at specific index:
-             // Check if mouse is "after" the center of target window in orientation direction.
-             if let rect = swapTarget.lastAppliedLayoutPhysicalRect {
-                 let projMouse = mouseLocation.getProjection(targetWorkspace.orientation)
-                 let projCenter = rect.center.getProjection(targetWorkspace.orientation)
-                 index = projMouse >= projCenter ? (swapTarget.ownIndex ?? 0) + 1 : (swapTarget.ownIndex ?? 0)
-             } else {
-                 index = 0
-             }
+            // In flat list, insert after or before based on orientation?
+            // Or just swap? DWM usually moves window to master when moving monitors.
+            // Or append to end.
+            // Let's use simple logic: append to end for now or next to swapTarget.
+
+            // If we want to support insertion at specific index:
+            // Check if mouse is "after" the center of target window in orientation direction.
+            if let rect = swapTarget.lastAppliedLayoutPhysicalRect {
+                let projMouse = mouseLocation.getProjection(targetWorkspace.orientation)
+                let projCenter = rect.center.getProjection(targetWorkspace.orientation)
+                index = projMouse >= projCenter ? (swapTarget.ownIndex ?? 0) + 1 : (swapTarget.ownIndex ?? 0)
+            } else {
+                index = 0
+            }
         } else {
             index = 0
         }

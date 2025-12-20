@@ -7,36 +7,35 @@ struct FocusCommand: Command {
 
     func run(_ env: CmdEnv, _ io: CmdIo) async throws -> Bool {
         guard let target = args.resolveTargetOrReportError(env, io) else { return false }
-        
+
         // Simplified: Ignore floating-as-tiling complexity for now
-        
+
         switch args.target {
             case .direction(let direction):
                 guard let window = target.windowOrNil else { return false }
                 guard let workspace = window.nodeWorkspace else { return false }
-                
+
                 // In flat master-stack:
                 // Up/Down = Prev/Next window in list
                 // Left/Right = Swap between Master and Stack areas? Or move focus to monitor?
-                // For now, let's map Up/Left to Prev, Down/Right to Next? 
+                // For now, let's map Up/Left to Prev, Down/Right to Next?
                 // Or try to mimic spatial relation in the list?
-                
+
                 // Actually, existing logic used tree traversal.
                 // New logic: Just use index in the list.
-                let windows = workspace.tilingWindows
+                let windows = workspace.allWindows
                 guard let currentIndex = windows.firstIndex(of: window) else { return false }
-                
-                let nextIndex: Int
-                if direction == .right || direction == .down {
-                    nextIndex = currentIndex + 1
+
+                let nextIndex: Int = if direction == .right || direction == .down {
+                    currentIndex + 1
                 } else {
-                    nextIndex = currentIndex - 1
+                    currentIndex - 1
                 }
-                
-                if (0..<windows.count).contains(nextIndex) {
+
+                if (0 ..< windows.count).contains(nextIndex) {
                     return windows[nextIndex].focusWindow()
                 } else {
-                     return hitWorkspaceBoundaries(target, io, args, direction)
+                    return hitWorkspaceBoundaries(target, io, args, direction)
                 }
 
             case .windowId(let windowId):
@@ -46,14 +45,14 @@ struct FocusCommand: Command {
                     return io.err("Can't find window with ID \(windowId)")
                 }
             case .dfsIndex(let dfsIndex):
-                let windows = target.workspace.tilingWindows
+                let windows = target.workspace.allWindows
                 if let windowToFocus = windows.getOrNil(atIndex: Int(dfsIndex)) {
                     return windowToFocus.focusWindow()
                 } else {
                     return io.err("Can't find window with DFS index \(dfsIndex)")
                 }
             case .dfsRelative(let nextPrev):
-                let windows = target.workspace.tilingWindows
+                let windows = target.workspace.allWindows
                 guard let currentIndex = windows.firstIndex(where: { $0 == target.windowOrNil }) else {
                     return false
                 }
@@ -120,21 +119,15 @@ struct FocusCommand: Command {
             return wrapAroundTheWorkspace(target, io, direction)
         case .wrapAroundAllMonitors:
             // Just focus last window
-            wrappedMonitor.activeWorkspace.tilingWindows.last?.markAsMostRecentChild()
+            wrappedMonitor.activeWorkspace.allWindows.last?.markAsMostRecentChild()
             return wrappedMonitor.activeWorkspace.focusWorkspace()
     }
 }
 
 @MainActor private func wrapAroundTheWorkspace(_ target: LiveFocus, _ io: CmdIo, _ direction: CardinalDirection) -> Bool {
-    let windows = target.workspace.tilingWindows
+    let windows = target.workspace.allWindows
     guard !windows.isEmpty else { return io.err(noWindowIsFocused) }
-    
+
     let windowToFocus = (direction == .right || direction == .down) ? windows.first : windows.last
     return windowToFocus?.focusWindow() ?? false
-}
-
-extension Workspace {
-    var tilingWindows: [Window] {
-        children.filterIsInstance(of: Window.self).filter { !$0.isFloating }
-    }
 }

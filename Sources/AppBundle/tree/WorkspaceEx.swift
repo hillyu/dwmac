@@ -1,6 +1,14 @@
 import Common
 
 extension Workspace {
+    var tilingWindows: [Window] {
+        children.filterIsInstance(of: Window.self).filter { !$0.isFloating }
+    }
+
+    var allWindows: [Window] {
+        children.filterIsInstance(of: Window.self)
+    }
+
     var floatingWindows: [Window] {
         children.filterIsInstance(of: Window.self).filter { $0.isFloating }
     }

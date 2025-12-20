@@ -172,11 +172,11 @@ private func toLayoutString(w: Workspace) -> String {
 private func toLayoutResult(w: Window) -> Result<Primitive, String> {
     guard let parent = w.parent else { return .failure("NULL-PARENT") }
     guard let workspace = w.nodeWorkspace else { return .failure("NULL-WORKSPACE") }
-    
+
     if w.isFloating {
         return .success(.string(LayoutCmdArgs.LayoutDescription.floating.rawValue))
     }
-    
+
     return switch getChildParentRelation(child: w, parent: parent) {
         case .tiling: .success(.string(toLayoutString(w: workspace)))
         case .floatingWindow: .success(.string(LayoutCmdArgs.LayoutDescription.floating.rawValue))

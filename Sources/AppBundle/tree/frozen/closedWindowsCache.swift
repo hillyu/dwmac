@@ -16,7 +16,7 @@ struct FrozenMonitor: Sendable {
 
 struct FrozenWorkspace: Sendable {
     let name: String
-    let monitor: FrozenMonitor 
+    let monitor: FrozenMonitor
     let rootTilingNode: FrozenContainer // Represents Workspace state
     let floatingWindows: [FrozenWindow]
     let macosUnconventionalWindows: [FrozenWindow]
@@ -60,16 +60,16 @@ struct FrozenWorkspace: Sendable {
         for frozenWindow in frozenWorkspace.floatingWindows {
             MacWindow.get(byId: frozenWindow.id)?.bindAsFloatingWindow(to: workspace)
         }
-        for frozenWindow in frozenWorkspace.macosUnconventionalWindows { 
+        for frozenWindow in frozenWorkspace.macosUnconventionalWindows {
             MacWindow.get(byId: frozenWindow.id)?.bindAsFloatingWindow(to: workspace)
         }
-        
+
         let potentialOrphans = workspace.tilingWindows
-        
+
         // Restore layout properties
         workspace.layout = frozenWorkspace.rootTilingNode.layout
         workspace.orientation = frozenWorkspace.rootTilingNode.orientation
-        
+
         // Restore Tiling Windows
         for (index, child) in frozenWorkspace.rootTilingNode.children.enumerated() {
             switch child {
@@ -80,14 +80,14 @@ struct FrozenWorkspace: Sendable {
                     die("Containers not supported in restoration")
             }
         }
-        
+
         // Relayout orphans (windows that were tiling but not in cache? or vice versa?)
         // If bind happened above, they are already in correct place.
         // We just need to check if any were left out.
         let newTiling = workspace.tilingWindows.map { $0.windowId }.toSet()
-        
+
         for orphan in potentialOrphans.filter({ !newTiling.contains($0.windowId) }) {
-             try await orphan.relayoutWindow(on: workspace, forceTile: true)
+            try await orphan.relayoutWindow(on: workspace, forceTile: true)
         }
     }
 

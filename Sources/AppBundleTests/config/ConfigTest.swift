@@ -207,26 +207,6 @@ final class ConfigTest: XCTestCase {
         }
     }
 
-    func testSplitCommandAndFlattenContainersNormalization() {
-        let (_, errors) = parseConfig(
-            """
-            enable-normalization-flatten-containers = true
-            [mode.main.binding]
-            [mode.foo.binding]
-                alt-s = 'split horizontal'
-            """,
-        )
-        assertEquals(
-            ["""
-                The config contains:
-                1. usage of 'split' command
-                2. enable-normalization-flatten-containers = true
-                These two settings don't play nicely together. 'split' command has no effect when enable-normalization-flatten-containers is disabled.
-                """],
-            errors.descriptions,
-        )
-    }
-
     func testParseWorkspaceToMonitorAssignment() {
         let (parsed, errors) = parseConfig(
             """

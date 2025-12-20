@@ -207,16 +207,16 @@ func parseCommandOrCommands(_ raw: TOMLValueConvertible) -> Parsed<[any Command]
     if config.enableNormalizationFlattenContainers {
         // Check for SplitCommand removed as it is no longer supported
         /*
-        let containsSplitCommand = config.modes.values.lazy.flatMap { $0.bindings.values }
-            .flatMap { $0.commands }
-            .contains { $0 is SplitCommand }
-        if containsSplitCommand {
-            errors += [.semantic(
-                "Config contains 'split' command which is irrelevant when 'enable-normalization-flatten-containers' is enabled. " +
-                    "Please remove 'split' command from your config or disable 'enable-normalization-flatten-containers'"
-            )]
-        }
-        */
+         let containsSplitCommand = config.modes.values.lazy.flatMap { $0.bindings.values }
+             .flatMap { $0.commands }
+             .contains { $0 is SplitCommand }
+         if containsSplitCommand {
+             errors += [.semantic(
+                 "Config contains 'split' command which is irrelevant when 'enable-normalization-flatten-containers' is enabled. " +
+                     "Please remove 'split' command from your config or disable 'enable-normalization-flatten-containers'"
+             )]
+         }
+         */
     }
     return (config, errors)
 }

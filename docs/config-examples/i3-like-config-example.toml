@@ -35,9 +35,6 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
     alt-shift-l = 'move up'
     alt-shift-semicolon = 'move right'
 
-    alt-h = 'split horizontal'
-    alt-v = 'split vertical'
-
     alt-f = 'fullscreen'
 
     alt-e = 'layout master-stack horizontal vertical' # 'layout toggle split' in i3

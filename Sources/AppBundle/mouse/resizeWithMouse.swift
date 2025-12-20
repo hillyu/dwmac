@@ -40,22 +40,22 @@ private let adaptiveWeightBeforeResizeWithMouseKey = TreeNodeUserDataKey<CGFloat
 private func resizeWithMouse(_ window: Window) async throws { // todo cover with tests
     resetClosedWindowsCache()
     guard let _ = window.nodeWorkspace else { return }
-    
+
     if window.isFloating {
-        return 
+        return
     }
-    
+
     // Todo: Implement mouse resizing for Master-Stack layout
     // This requires detecting if we are resizing the master split (update mfact)
     // or stack split (update weights).
-    
+
     // For now, we disable mouse resize logic to fix compilation.
     // DWM typically uses keyboard for resizing master area.
 }
 
 extension TreeNode {
     @MainActor
-    fileprivate func getWeightBeforeResize(_ orientation: Orientation) -> CGFloat {
+    private func getWeightBeforeResize(_ orientation: Orientation) -> CGFloat {
         let currentWeight = getWeight(orientation) // Check assertions
         return getUserData(key: adaptiveWeightBeforeResizeWithMouseKey)
             ?? (lastAppliedLayoutVirtualRect?.getDimension(orientation) ?? currentWeight)

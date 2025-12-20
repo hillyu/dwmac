@@ -86,26 +86,26 @@ extension TreeNode {
     ) -> (parent: Workspace, ownIndex: Int)? {
         guard let window = self as? Window else { return nil }
         guard let workspace = window.nodeWorkspace else { return nil }
-        
+
         if let layout, workspace.layout != layout { return nil }
         if workspace.orientation != direction.orientation { return nil }
-        
+
         // In simple list, we check if next/prev index exists?
         // Wait, closestParent logic was about finding a split container in the tree.
         // Now there is only one container: Workspace.
-        
+
         // So we just check if moving in that direction is valid in the list?
         // But FocusCommand logic used this to find *where* to move.
-        
+
         // Let's assume this returns the Workspace if the direction implies movement in the list.
         // For Master-Stack (assuming H orientation):
         // Left/Right = Prev/Next?
-        
+
         // Actually, let's just return the workspace if it matches criteria.
         guard let index = window.ownIndex else { return nil }
         let nextIndex = index + direction.focusOffset
         if workspace.children.indices.contains(nextIndex) {
-             return (workspace, index)
+            return (workspace, index)
         }
         return nil
     }

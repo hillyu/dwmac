@@ -8,7 +8,7 @@ struct MfactCommand: Command {
     func run(_ env: CmdEnv, _ io: CmdIo) async throws -> Bool {
         guard let window = focus.windowOrNil else { return false }
         guard let workspace = window.nodeWorkspace else { return false }
-        
+
         if workspace.layout != .masterStack { return false }
 
         switch args.amount.val {

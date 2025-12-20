@@ -12,13 +12,13 @@ struct MoveNodeToMasterCommand: Command {
 
         // Window is already in workspace children.
         // We need to reorder it to index 0 among TILING windows.
-        
+
         // This is tricky because `workspace.children` contains both tiling and floating.
         // But `bind` takes an index in `children`.
         // So we need to find the index of the first tiling window.
-        
+
         let firstTilingIndex = workspace.children.firstIndex(where: { ($0 as? Window)?.isFloating == false }) ?? 0
-        
+
         window.bind(to: workspace, adaptiveWeight: WEIGHT_AUTO, index: firstTilingIndex)
         return true
     }

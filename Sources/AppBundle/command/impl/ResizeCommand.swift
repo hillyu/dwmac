@@ -9,30 +9,29 @@ struct ResizeCommand: Command { // todo cover with tests
         guard let target = args.resolveTargetOrReportError(env, io) else { return false }
         guard let window = target.windowOrNil else { return false }
         guard let workspace = window.nodeWorkspace else { return false }
-        
+
         if window.isFloating {
-             return io.err("resize command doesn't support floating windows yet")
+            return io.err("resize command doesn't support floating windows yet")
         }
         if workspace.layout != .masterStack {
-             return false
+            return false
         }
 
-        let orientation: Orientation?
-        switch args.dimension.val {
+        let orientation: Orientation? = switch args.dimension.val {
             case .width:
-                orientation = .h
+                .h
             case .height:
-                orientation = .v
+                .v
             case .smart:
-                orientation = workspace.orientation
+                workspace.orientation
             case .smartOpposite:
-                orientation = workspace.orientation.opposite
+                workspace.orientation.opposite
         }
-        
+
         guard let orientation else { return false }
-        
+
         if orientation != workspace.orientation {
-             return io.err("Can't resize in \(orientation) direction because container orientation is \(workspace.orientation)")
+            return io.err("Can't resize in \(orientation) direction because container orientation is \(workspace.orientation)")
         }
 
         let diff: CGFloat = switch args.units.val {

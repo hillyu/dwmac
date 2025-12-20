@@ -232,13 +232,13 @@ private func unbindAndGetBindingDataForNewTilingWindow(_ workspace: Workspace, w
     // Always append to end of list for new windows, or next to MRU?
     // DWM puts new window in master (index 0).
     // Let's put in master.
-    
+
     // But existing logic was trying to be "smart" (next to MRU).
     // Let's stick to DWM: Master
     return BindingData(
         parent: workspace,
         adaptiveWeight: WEIGHT_AUTO,
-        index: 0, 
+        index: 0,
     )
 }
 

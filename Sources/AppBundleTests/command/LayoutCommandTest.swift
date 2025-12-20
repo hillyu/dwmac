@@ -21,18 +21,19 @@ final class LayoutCommandTest: XCTestCase {
     @MainActor
     func testFloatingTilingToggle() async throws {
         let workspace = Workspace.get(byName: "a")
-        let window = TestWindow.new(id: 1, parent: workspace.rootTilingContainer).apply { _ = $0.focusWindow() }
+        let window = TestWindow.new(id: 1, parent: workspace).apply { _ = $0.focusWindow() }
 
-        XCTAssertTrue(window.parent is TilingContainer)
+        // Initial state should be tiling
+        XCTAssertFalse(window.isFloating)
 
         // Toggle to floating
         try await LayoutCommand(args: LayoutCmdArgs(rawArgs: [], toggleBetween: [.tiling, .floating]))
             .run(.defaultEnv, .emptyStdin)
-        XCTAssertTrue(window.parent is Workspace)
+        XCTAssertTrue(window.isFloating)
 
         // Toggle back to tiling
         try await LayoutCommand(args: LayoutCmdArgs(rawArgs: [], toggleBetween: [.tiling, .floating]))
             .run(.defaultEnv, .emptyStdin)
-        XCTAssertTrue(window.parent is TilingContainer)
+        XCTAssertFalse(window.isFloating)
     }
 }

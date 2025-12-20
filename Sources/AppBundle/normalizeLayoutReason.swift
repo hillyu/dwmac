@@ -51,7 +51,7 @@ private func _normalizeLayoutReason(workspace: Workspace, windows: [Window]) asy
 @MainActor
 func exitMacOsNativeUnconventionalState(window: Window, prevParentKind: NonLeafTreeNodeKind, workspace: Workspace) async throws {
     window.layoutReason = .standard
-    
+
     if window.isFloating {
         window.bindAsFloatingWindow(to: workspace)
     } else {

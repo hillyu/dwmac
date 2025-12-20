@@ -17,10 +17,10 @@ extension TreeNode {
             case .workspace(let workspace):
                 lastAppliedLayoutPhysicalRect = physicalRect
                 lastAppliedLayoutVirtualRect = virtual
-                
+
                 // Layout tiling windows
                 try await workspace.layoutMasterStack(point, width: width, height: height, virtual: virtual, context)
-                
+
                 // Layout floating windows
                 for window in workspace.children.filterIsInstance(of: Window.self).filter({ $0.isFloating }) {
                     window.lastAppliedLayoutPhysicalRect = nil
@@ -94,14 +94,14 @@ extension Workspace {
     fileprivate func layoutMasterStack(_ point: CGPoint, width: CGFloat, height: CGFloat, virtual: Rect, _ context: LayoutContext) async throws {
         let windows = tilingWindows
         if windows.isEmpty { return }
-        
+
         if layout == .floating {
-             // Treat all as floating? But tilingWindows excludes floating.
-             // If layout is floating, maybe we don't tile them at all?
-             // DWM "Floating" layout usually means no windows are tiled.
-             return
+            // Treat all as floating? But tilingWindows excludes floating.
+            // If layout is floating, maybe we don't tile them at all?
+            // DWM "Floating" layout usually means no windows are tiled.
+            return
         }
-        
+
         if windows.count == 1 {
             try await windows[0].layoutRecursive(point, width: width, height: height, virtual: virtual, context)
             return
@@ -111,7 +111,7 @@ extension Workspace {
         let masterHeight: CGFloat
         let stackWidth: CGFloat
         let stackHeight: CGFloat
-        
+
         if orientation == .h {
             masterWidth = width * mfact
             masterHeight = height
@@ -129,11 +129,10 @@ extension Workspace {
 
         // Stack windows
         for i in 1 ..< windows.count {
-            let stackPoint: CGPoint
-            if orientation == .h {
-                stackPoint = point.addingXOffset(masterWidth).addingYOffset(CGFloat(i - 1) * stackHeight)
+            let stackPoint: CGPoint = if orientation == .h {
+                point.addingXOffset(masterWidth).addingYOffset(CGFloat(i - 1) * stackHeight)
             } else {
-                stackPoint = point.addingYOffset(masterHeight).addingXOffset(CGFloat(i - 1) * stackWidth)
+                point.addingYOffset(masterHeight).addingXOffset(CGFloat(i - 1) * stackWidth)
             }
             try await windows[i].layoutRecursive(stackPoint, width: stackWidth, height: stackHeight, virtual: virtual, context)
         }

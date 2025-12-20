@@ -102,9 +102,9 @@ func illegalChildParentRelation(child: TreeNode, parent: NonLeafTreeNodeObject?)
 func getChildParentRelationOrNil(child: TreeNode, parent: NonLeafTreeNodeObject) -> ChildParentRelation? {
     return switch (child.nodeCases, parent.cases) {
         case (.workspace, _): nil
-        
+
         // Window in Workspace: Could be floating or tiling
-        case (.window(let w), .workspace): 
+        case (.window(let w), .workspace):
             w.isFloating ? .floatingWindow : .tiling
 
         case (.window, .macosPopupWindowsContainer): .macosPopupWindow

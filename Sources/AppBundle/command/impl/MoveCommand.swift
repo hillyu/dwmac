@@ -12,39 +12,38 @@ struct MoveCommand: Command {
             return io.err(noWindowIsFocused)
         }
         guard let workspace = currentWindow.nodeWorkspace else { return false }
-        
+
         if currentWindow.isFloating {
-             return io.err("moving floating windows isn't yet supported")
+            return io.err("moving floating windows isn't yet supported")
         }
-        
+
         let windows = workspace.tilingWindows
         guard let currentIndex = windows.firstIndex(of: currentWindow) else { return false }
-        
-        let targetIndex: Int
-        if direction == .right || direction == .down {
-            targetIndex = currentIndex + 1
+
+        let targetIndex: Int = if direction == .right || direction == .down {
+            currentIndex + 1
         } else {
-            targetIndex = currentIndex - 1
+            currentIndex - 1
         }
-        
-        if (0..<windows.count).contains(targetIndex) {
+
+        if (0 ..< windows.count).contains(targetIndex) {
             // ...
-            
+
             let targetWindow = windows[targetIndex]
             if !workspace.children.contains(targetWindow) { return false }
-            
+
+            let weight = currentWindow.getWeight(workspace.orientation)
             currentWindow.unbindFromParent()
             // Re-find target index as it might have shifted
             guard let newTargetIndex = workspace.children.firstIndex(of: targetWindow) else { return false }
-            
-            let insertionIndex: Int
-            if direction == .right || direction == .down {
-                insertionIndex = newTargetIndex + 1
+
+            let insertionIndex: Int = if direction == .right || direction == .down {
+                newTargetIndex + 1
             } else {
-                insertionIndex = newTargetIndex
+                newTargetIndex
             }
-            
-            currentWindow.bind(to: workspace, adaptiveWeight: WEIGHT_AUTO, index: insertionIndex)
+
+            currentWindow.bind(to: workspace, adaptiveWeight: weight, index: insertionIndex)
             return true
         } else {
             return hitWorkspaceBoundaries(currentWindow, workspace, io, args, direction, env)
@@ -98,6 +97,6 @@ struct MoveCommand: Command {
         case .stop: return true
         case .fail: return false
         case .createImplicitContainer:
-             return io.err("Implicit containers are not supported in DWM mode")
+            return io.err("Implicit containers are not supported in DWM mode")
     }
 }
