@@ -1,0 +1,38 @@
+= dwmac-mfact(1)
+include::util/man-attributes.adoc[]
+:manname: dwmac-mfact
+// tag::purpose[]
+:manpurpose: Set or adjust the master area factor (ratio) for master-stack layout.
+// end::purpose[]
+
+// =========================================================== Synopsis
+== Synopsis
+[verse]
+// tag::synopsis[]
+dwmac mfact [-h|--help] [+|-]<number>
+
+// end::synopsis[]
+
+// =========================================================== Description
+== Description
+
+// tag::body[]
+{manpurpose}
+
+The command affects the currently focused container if it has `master-stack` layout, or the nearest parent container with `master-stack` layout.
+
+If the `<number>` is prefixed with `+` then the mfact is increased.
+If the `<number>` is prefixed with `-` then the mfact is decreased.
+If the `<number>` is prefixed with neither `+` nor `-` then the command sets the absolute value of the mfact.
+
+The value is clamped between 0.05 and 0.95. The default mfact is 0.5.
+
+// =========================================================== Options
+include::./util/conditional-options-header.adoc[]
+
+-h, --help:: Print help
+
+// end::body[]
+
+// =========================================================== Footer
+include::util/man-footer.adoc[]

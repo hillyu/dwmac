@@ -1,0 +1,47 @@
+= dwmac-trigger-binding(1)
+include::util/man-attributes.adoc[]
+:manname: dwmac-trigger-binding
+// tag::purpose[]
+:manpurpose: Trigger Dwmac binding as if it was pressed by user
+// end::purpose[]
+
+// =========================================================== Synopsis
+== Synopsis
+[verse]
+// tag::synopsis[]
+dwmac trigger-binding [-h|--help] <binding> --mode <mode-id>
+
+// end::synopsis[]
+
+// =========================================================== Description
+== Description
+
+// tag::body[]
+{manpurpose}
+
+You can use dwmac-config command to inspect available bindings: +
+`dwmac config --get mode.main.binding --keys`
+
+// =========================================================== Options
+include::util/conditional-options-header.adoc[]
+
+-h, --help:: Print help
+--mode <mode-id>:: Mode to search `<binding>` in
+
+// =========================================================== Arguments
+include::util/conditional-arguments-header.adoc[]
+
+<binding>:: Binding to trigger
+
+// =========================================================== Examples
+include::util/conditional-examples-header.adoc[]
+
+* Run alphabetically first binding from config (useless and synthetic example): +
+`dwmac trigger-binding --mode main "$(dwmac config --get mode.main.binding --keys | head -1)"`
+* Trigger `alt-tab` binding: +
+`dwmac trigger-binding --mode main alt-tab`
+
+// end::body[]
+
+// =========================================================== Footer
+include::util/man-footer.adoc[]

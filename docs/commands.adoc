@@ -1,0 +1,257 @@
+= Dwmac Commands
+include::util/site-attributes.adoc[]
+
+include::util/header.adoc[]
+
+Commands documentation is also available as manpages.
+
+
+== close
+----
+include::dwmac-close.adoc[tags=synopsis]
+----
+include::dwmac-close.adoc[tags=purpose]
+include::dwmac-close.adoc[tags=body]
+
+== close-all-windows-but-current
+----
+include::dwmac-close-all-windows-but-current.adoc[tags=synopsis]
+----
+include::dwmac-close-all-windows-but-current.adoc[tags=purpose]
+include::dwmac-close-all-windows-but-current.adoc[tags=body]
+
+== enable
+----
+include::dwmac-enable.adoc[tags=synopsis]
+----
+include::dwmac-enable.adoc[tags=purpose]
+include::dwmac-enable.adoc[tags=body]
+
+== exec-and-forget
+----
+include::dwmac-exec-and-forget.adoc[tags=synopsis]
+----
+include::dwmac-exec-and-forget.adoc[tags=purpose]
+include::dwmac-exec-and-forget.adoc[tags=body]
+
+
+== focus
+----
+include::dwmac-focus.adoc[tags=synopsis]
+----
+include::dwmac-focus.adoc[tags=purpose]
+include::dwmac-focus.adoc[tags=body]
+
+== focus-back-and-forth
+----
+
+include::./dwmac-focus-back-and-forth.adoc[tags=synopsis]
+----
+include::./dwmac-focus-back-and-forth.adoc[tags=purpose]
+include::./dwmac-focus-back-and-forth.adoc[tags=body]
+
+== focus-monitor
+----
+include::dwmac-focus-monitor.adoc[tags=synopsis]
+----
+include::dwmac-focus-monitor.adoc[tags=purpose]
+include::dwmac-focus-monitor.adoc[tags=body]
+
+== fullscreen
+----
+include::dwmac-fullscreen.adoc[tags=synopsis]
+----
+include::dwmac-fullscreen.adoc[tags=purpose]
+include::dwmac-fullscreen.adoc[tags=body]
+
+
+== layout
+----
+include::dwmac-layout.adoc[tags=synopsis]
+----
+include::dwmac-layout.adoc[tags=purpose]
+include::dwmac-layout.adoc[tags=body]
+
+== macos-native-fullscreen
+----
+include::dwmac-macos-native-fullscreen.adoc[tags=synopsis]
+----
+include::dwmac-macos-native-fullscreen.adoc[tags=purpose]
+include::dwmac-macos-native-fullscreen.adoc[tags=body]
+
+== macos-native-minimize
+----
+include::dwmac-macos-native-minimize.adoc[tags=synopsis]
+----
+include::dwmac-macos-native-minimize.adoc[tags=purpose]
+include::dwmac-macos-native-minimize.adoc[tags=body]
+
+== mode
+----
+include::dwmac-mode.adoc[tags=synopsis]
+----
+include::dwmac-mode.adoc[tags=purpose]
+include::dwmac-mode.adoc[tags=body]
+
+[#move]
+== move
+----
+include::dwmac-move.adoc[tags=synopsis]
+----
+include::dwmac-move.adoc[tags=purpose]
+include::dwmac-move.adoc[tags=body]
+
+== move-mouse
+----
+include::./dwmac-move-mouse.adoc[tags=synopsis]
+----
+include::./dwmac-move-mouse.adoc[tags=purpose]
+include::./dwmac-move-mouse.adoc[tags=body]
+
+== move-node-to-monitor
+----
+include::dwmac-move-node-to-monitor.adoc[tags=synopsis]
+----
+include::dwmac-move-node-to-monitor.adoc[tags=purpose]
+include::dwmac-move-node-to-monitor.adoc[tags=body]
+
+== move-node-to-workspace
+----
+include::dwmac-move-node-to-workspace.adoc[tags=synopsis]
+----
+include::dwmac-move-node-to-workspace.adoc[tags=purpose]
+include::dwmac-move-node-to-workspace.adoc[tags=body]
+
+== move-workspace-to-monitor
+----
+include::dwmac-move-workspace-to-monitor.adoc[tags=synopsis]
+----
+include::dwmac-move-workspace-to-monitor.adoc[tags=purpose]
+include::dwmac-move-workspace-to-monitor.adoc[tags=body]
+
+== reload-config
+----
+include::dwmac-reload-config.adoc[tags=synopsis]
+----
+include::dwmac-reload-config.adoc[tags=purpose]
+include::dwmac-reload-config.adoc[tags=body]
+
+== resize
+----
+include::dwmac-resize.adoc[tags=synopsis]
+----
+include::dwmac-resize.adoc[tags=purpose]
+include::dwmac-resize.adoc[tags=body]
+
+== split
+----
+include::dwmac-split.adoc[tags=synopsis]
+----
+include::dwmac-split.adoc[tags=purpose]
+include::dwmac-split.adoc[tags=body]
+
+== swap
+----
+include::dwmac-swap.adoc[tags=synopsis]
+----
+include::dwmac-swap.adoc[tags=purpose]
+include::dwmac-swap.adoc[tags=body]
+
+== summon-workspace
+----
+include::./dwmac-summon-workspace.adoc[tags=synopsis]
+----
+include::./dwmac-summon-workspace.adoc[tags=purpose]
+include::./dwmac-summon-workspace.adoc[tags=body]
+
+== trigger-binding
+----
+include::dwmac-trigger-binding.adoc[tags=synopsis]
+----
+include::dwmac-trigger-binding.adoc[tags=purpose]
+include::dwmac-trigger-binding.adoc[tags=body]
+
+== volume
+----
+include::./dwmac-volume.adoc[tags=synopsis]
+----
+include::./dwmac-volume.adoc[tags=purpose]
+include::./dwmac-volume.adoc[tags=body]
+
+== workspace
+----
+include::dwmac-workspace.adoc[tags=synopsis]
+----
+include::dwmac-workspace.adoc[tags=purpose]
+include::dwmac-workspace.adoc[tags=body]
+
+== workspace-back-and-forth
+----
+include::dwmac-workspace-back-and-forth.adoc[tags=synopsis]
+----
+include::dwmac-workspace-back-and-forth.adoc[tags=purpose]
+include::dwmac-workspace-back-and-forth.adoc[tags=body]
+
+== Query commands
+
+Query commands are commands that do not change the state but rather allow the examination of the current state.
+
+- Query commands are *NOT* available in config +
+(because there is no way to consume the stdout of these commands in config)
+- Query commands are only available in CLI
+
+=== config
+----
+include::dwmac-config.adoc[tags=synopsis]
+----
+include::dwmac-config.adoc[tags=purpose]
+include::dwmac-config.adoc[tags=body]
+
+=== debug-windows
+----
+include::dwmac-debug-windows.adoc[tags=synopsis]
+----
+include::dwmac-debug-windows.adoc[tags=purpose]
+include::dwmac-debug-windows.adoc[tags=body]
+
+=== list-apps
+----
+include::dwmac-list-apps.adoc[tags=synopsis]
+----
+include::dwmac-list-apps.adoc[tags=purpose]
+include::dwmac-list-apps.adoc[tags=body]
+
+=== list-exec-env-vars
+----
+include::dwmac-list-exec-env-vars.adoc[tags=synopsis]
+----
+include::dwmac-list-exec-env-vars.adoc[tags=purpose]
+include::dwmac-list-exec-env-vars.adoc[tags=body]
+
+=== list-modes
+----
+include::dwmac-list-modes.adoc[tags=synopsis]
+----
+include::dwmac-list-modes.adoc[tags=purpose]
+include::dwmac-list-modes.adoc[tags=body]
+
+=== list-monitors
+----
+include::dwmac-list-monitors.adoc[tags=synopsis]
+----
+include::dwmac-list-monitors.adoc[tags=purpose]
+include::dwmac-list-monitors.adoc[tags=body]
+
+=== list-windows
+----
+include::dwmac-list-windows.adoc[tags=synopsis]
+----
+include::dwmac-list-windows.adoc[tags=purpose]
+include::dwmac-list-windows.adoc[tags=body]
+
+=== list-workspaces
+----
+include::dwmac-list-workspaces.adoc[tags=synopsis]
+----
+include::dwmac-list-workspaces.adoc[tags=purpose]
+include::dwmac-list-workspaces.adoc[tags=body]
