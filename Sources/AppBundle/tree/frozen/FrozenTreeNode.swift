@@ -32,5 +32,8 @@ struct FrozenWindow: Sendable {
 
 @MainActor private func getWeightOrNil(_ node: TreeNode) -> CGFloat? {
     guard let workspace = node.parent as? Workspace else { return nil }
-    return node.getWeight(workspace.orientation)
+    switch getChildParentRelation(child: node, parent: workspace) {
+        case .tiling: return node.getWeight(workspace.orientation)
+        default: return nil
+    }
 }
