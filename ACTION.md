@@ -6,3 +6,4 @@
 - Removed `.build`, `.xcode-build`, and `.release` directories.
 - Verified that no "aerospace" named build artifacts remain.
 - Confirmed the project builds successfully with `swift build`.
+- Updated `docs/index.html` to redirect to `guide.html` instead of the project repository.
