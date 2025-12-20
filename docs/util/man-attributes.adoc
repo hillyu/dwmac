@@ -1,0 +1,5 @@
+ifndef::env-site[]
+:doctype: manpage
+:manmanual: Dwmac Manual
+:mansource: Dwmac
+endif::[]

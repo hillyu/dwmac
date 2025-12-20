@@ -1,0 +1,37 @@
+= dwmac-enable(1)
+include::util/man-attributes.adoc[]
+:manname: dwmac-enable
+// tag::purpose[]
+:manpurpose: Temporarily disable window management
+// end::purpose[]
+
+// =========================================================== Synopsis
+== Synopsis
+[verse]
+// tag::synopsis[]
+dwmac enable [-h|--help] toggle
+dwmac enable [-h|--help] on [--fail-if-noop]
+dwmac enable [-h|--help] off [--fail-if-noop]
+
+// end::synopsis[]
+
+// =========================================================== Description
+== Description
+
+// tag::body[]
+{manpurpose}
+
+When you disable Dwmac, windows from currently invisible workspaces will be placed to the visible area of the screen
+
+Key events are not intercepted when Dwmac is disabled
+
+// =========================================================== Options
+include::util/conditional-options-header.adoc[]
+
+-h, --help:: Print help
+--fail-if-noop:: Exit with non-zero exit code if already in the requested mode
+
+// end::body[]
+
+// =========================================================== Footer
+include::util/man-footer.adoc[]

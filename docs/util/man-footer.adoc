@@ -1,0 +1,20 @@
+== Resources
+
+*Project homepage:* https://github.com/hillyu/Dwmac +
+*Guide:* https://hillyu.github.io/Dwmac/guide +
+
+== BUGS
+
+Bugs can be reported to https://github.com/hillyu/Dwmac/discussions/categories/potential-bugs
+
+Maintainers will move verified bugs to https://github.com/hillyu/Dwmac/issues
+
+== License
+
+Copyright (C) 2023 Hillyu +
+Free use of this software is granted under the terms of the MIT License +
+You can find the full text of Dwmac license and its dependencies in the 'legal' directory of the distributed zip archive.
+
+== AUTHOR
+
+Hillyu and contributors
