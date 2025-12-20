@@ -38,7 +38,7 @@ extension TreeNode {
         switch self.nodeCases {
             case .workspace(let ws): ws.workspaceMonitor
             case .window: parent?.nodeMonitor
-            case .tilingContainer: parent?.nodeMonitor
+            // case .tilingContainer: parent?.nodeMonitor
             case .macosFullscreenWindowsContainer: parent?.nodeMonitor
             case .macosHiddenAppsWindowsContainer: parent?.nodeMonitor
             case .macosMinimizedWindowsContainer, .macosPopupWindowsContainer: nil
@@ -79,30 +79,34 @@ extension TreeNode {
     }
 
     /// Returns closest parent that has children in the specified direction relative to `self`
+    /// In flat structure, this is simplified.
     func closestParent(
         hasChildrenInDirection direction: CardinalDirection,
         withLayout layout: Layout?,
-    ) -> (parent: TilingContainer, ownIndex: Int)? {
-        let innermostChild = parentsWithSelf.first(where: { (node: TreeNode) -> Bool in
-            return switch node.parent?.cases {
-                // stop searching. We didn't find it, or something went wrong
-                case .workspace, nil, .macosMinimizedWindowsContainer,
-                     .macosFullscreenWindowsContainer, .macosHiddenAppsWindowsContainer, .macosPopupWindowsContainer:
-                    true
-                case .tilingContainer(let parent):
-                    (layout == nil || parent.layout == layout) &&
-                        parent.orientation == direction.orientation &&
-                        (node.ownIndex.map { parent.children.indices.contains($0 + direction.focusOffset) } ?? true)
-            }
-        })
-        guard let innermostChild else { return nil }
-        switch innermostChild.parent?.cases {
-            case .tilingContainer(let parent):
-                check(parent.orientation == direction.orientation)
-                return innermostChild.ownIndex.map { (parent, $0) }
-            case .workspace, nil, .macosMinimizedWindowsContainer,
-                 .macosFullscreenWindowsContainer, .macosHiddenAppsWindowsContainer, .macosPopupWindowsContainer:
-                return nil
+    ) -> (parent: Workspace, ownIndex: Int)? {
+        guard let window = self as? Window else { return nil }
+        guard let workspace = window.nodeWorkspace else { return nil }
+        
+        if let layout, workspace.layout != layout { return nil }
+        if workspace.orientation != direction.orientation { return nil }
+        
+        // In simple list, we check if next/prev index exists?
+        // Wait, closestParent logic was about finding a split container in the tree.
+        // Now there is only one container: Workspace.
+        
+        // So we just check if moving in that direction is valid in the list?
+        // But FocusCommand logic used this to find *where* to move.
+        
+        // Let's assume this returns the Workspace if the direction implies movement in the list.
+        // For Master-Stack (assuming H orientation):
+        // Left/Right = Prev/Next?
+        
+        // Actually, let's just return the workspace if it matches criteria.
+        guard let index = window.ownIndex else { return nil }
+        let nextIndex = index + direction.focusOffset
+        if workspace.children.indices.contains(nextIndex) {
+             return (workspace, index)
         }
+        return nil
     }
 }

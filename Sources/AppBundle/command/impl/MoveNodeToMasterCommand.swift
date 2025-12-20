@@ -7,14 +7,19 @@ struct MoveNodeToMasterCommand: Command {
 
     func run(_ env: CmdEnv, _ io: CmdIo) async throws -> Bool {
         guard let window = focus.windowOrNil else { return false }
-        guard let parent = window.parent as? TilingContainer else { return false }
+        guard let workspace = window.nodeWorkspace else { return false }
+        if window.isFloating { return false }
 
-        let targetIndex = 0
-        if window.ownIndex == targetIndex {
-            return true
-        }
-
-        window.bind(to: parent, adaptiveWeight: WEIGHT_AUTO, index: targetIndex)
+        // Window is already in workspace children.
+        // We need to reorder it to index 0 among TILING windows.
+        
+        // This is tricky because `workspace.children` contains both tiling and floating.
+        // But `bind` takes an index in `children`.
+        // So we need to find the index of the first tiling window.
+        
+        let firstTilingIndex = workspace.children.firstIndex(where: { ($0 as? Window)?.isFloating == false }) ?? 0
+        
+        window.bind(to: workspace, adaptiveWeight: WEIGHT_AUTO, index: firstTilingIndex)
         return true
     }
 }

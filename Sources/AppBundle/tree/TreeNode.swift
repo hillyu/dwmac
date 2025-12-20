@@ -34,11 +34,12 @@ open class TreeNode: Equatable, AeroAny {
     func setWeight(_ targetOrientation: Orientation, _ newValue: CGFloat) {
         guard let parent else { die("Can't change weight if TreeNode doesn't have parent") }
         switch getChildParentRelation(child: self, parent: parent) {
-            case .tiling(let parent):
-                if parent.orientation != targetOrientation {
-                    die("You can't change \(targetOrientation) weight of nodes located in \(parent.orientation) container")
+            case .tiling:
+                guard let workspace = parent as? Workspace else { die("Parent of tiling node must be Workspace") }
+                if workspace.orientation != targetOrientation {
+                    die("You can't change \(targetOrientation) weight of nodes located in \(workspace.orientation) container")
                 }
-                if parent.layout != .masterStack {
+                if workspace.layout != .masterStack {
                     die("Weight can be changed only for nodes whose parent has 'master-stack' layout")
                 }
                 adaptiveWeight = newValue
@@ -51,15 +52,16 @@ open class TreeNode: Equatable, AeroAny {
     @MainActor
     func getWeight(_ targetOrientation: Orientation) -> CGFloat {
         guard let parent else { die("Weight doesn't make sense for containers without parent") }
-        return switch getChildParentRelation(child: self, parent: parent) {
-            case .tiling(let parent):
-                parent.orientation == targetOrientation ? adaptiveWeight : parent.getWeight(targetOrientation)
-            case .rootTilingContainer: parent.getWeight(targetOrientation)
-            case .floatingWindow, .macosNativeFullscreenWindow: dieT("Weight doesn't make sense for floating windows")
-            case .macosNativeMinimizedWindow: dieT("Weight doesn't make sense for minimized windows")
-            case .macosPopupWindow: dieT("Weight doesn't make sense for popup windows")
-            case .macosNativeHiddenAppWindow: dieT("Weight doesn't make sense for windows of hidden apps")
-            case .shimContainerRelation: dieT("Weight doesn't make sense for stub containers")
+        switch getChildParentRelation(child: self, parent: parent) {
+            case .tiling:
+                guard let workspace = parent as? Workspace else { die("Parent of tiling node must be Workspace") }
+                return workspace.orientation == targetOrientation ? adaptiveWeight : workspace.getWeight(targetOrientation)
+            // case .rootTilingContainer: parent.getWeight(targetOrientation)
+            case .floatingWindow, .macosNativeFullscreenWindow: return dieT("Weight doesn't make sense for floating windows")
+            case .macosNativeMinimizedWindow: return dieT("Weight doesn't make sense for minimized windows")
+            case .macosPopupWindow: return dieT("Weight doesn't make sense for popup windows")
+            case .macosNativeHiddenAppWindow: return dieT("Weight doesn't make sense for windows of hidden apps")
+            case .shimContainerRelation: return dieT("Weight doesn't make sense for stub containers")
         }
     }
 
@@ -74,10 +76,14 @@ open class TreeNode: Equatable, AeroAny {
         let relation = getChildParentRelation(child: self, parent: newParent) // Side effect: verify relation
         if adaptiveWeight == WEIGHT_AUTO {
             self.adaptiveWeight = switch relation {
-                case .tiling(let newParent):
-                    CGFloat(newParent.children.sumOfDouble { $0.getWeight(newParent.orientation) }).div(newParent.children.count) ?? 1
+                case .tiling:
+                    if let workspace = newParent as? Workspace {
+                        CGFloat(workspace.children.sumOfDouble { $0.getWeight(workspace.orientation) }).div(workspace.children.count) ?? 1
+                    } else {
+                        1
+                    }
                 case .floatingWindow, .macosNativeFullscreenWindow,
-                     .rootTilingContainer, .macosNativeMinimizedWindow,
+                     /*.rootTilingContainer,*/ .macosNativeMinimizedWindow,
                      .shimContainerRelation, .macosPopupWindow, .macosNativeHiddenAppWindow:
                     WEIGHT_DOESNT_MATTER
             }

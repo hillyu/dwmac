@@ -2,7 +2,7 @@ import AppKit
 import Common
 
 enum FrozenTreeNode: Sendable {
-    case container(FrozenContainer)
+    case container(FrozenContainer) // Kept for compatibility but effectively represents Workspace root
     case window(FrozenWindow)
 }
 
@@ -12,22 +12,11 @@ struct FrozenContainer: Sendable {
     let orientation: Orientation
     let weight: CGFloat
 
-    @MainActor init(_ container: TilingContainer) {
-        children = container.children.map {
-            switch $0.nodeCases {
-                case .window(let w): .window(FrozenWindow(w))
-                case .tilingContainer(let c): .container(FrozenContainer(c))
-                case .workspace,
-                     .macosMinimizedWindowsContainer,
-                     .macosHiddenAppsWindowsContainer,
-                     .macosFullscreenWindowsContainer,
-                     .macosPopupWindowsContainer:
-                    illegalChildParentRelation(child: $0, parent: container)
-            }
-        }
-        layout = container.layout
-        orientation = container.orientation
-        weight = getWeightOrNil(container) ?? 1
+    @MainActor init(_ workspace: Workspace) {
+        children = workspace.tilingWindows.map { .window(FrozenWindow($0)) }
+        layout = workspace.layout
+        orientation = workspace.orientation
+        weight = 1 // Workspace has no weight
     }
 }
 
@@ -42,5 +31,6 @@ struct FrozenWindow: Sendable {
 }
 
 @MainActor private func getWeightOrNil(_ node: TreeNode) -> CGFloat? {
-    ((node.parent as? TilingContainer)?.orientation).map { node.getWeight($0) }
+    guard let workspace = node.parent as? Workspace else { return nil }
+    return node.getWeight(workspace.orientation)
 }

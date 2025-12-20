@@ -7,32 +7,19 @@ struct MfactCommand: Command {
 
     func run(_ env: CmdEnv, _ io: CmdIo) async throws -> Bool {
         guard let window = focus.windowOrNil else { return false }
-
-        var current: TreeNode? = window.parent
-        var targetContainer: TilingContainer?
-
-        // Search up for a master-stack container
-        while let node = current {
-            if let container = node as? TilingContainer, container.layout == .masterStack {
-                targetContainer = container
-                break
-            }
-            current = node.parent
-        }
-
-        guard let container = targetContainer else {
-            return false
-        }
+        guard let workspace = window.nodeWorkspace else { return false }
+        
+        if workspace.layout != .masterStack { return false }
 
         switch args.amount.val {
-            case .set(let value): container.mfact = CGFloat(value)
-            case .add(let value): container.mfact += CGFloat(value)
-            case .subtract(let value): container.mfact -= CGFloat(value)
+            case .set(let value): workspace.mfact = CGFloat(value)
+            case .add(let value): workspace.mfact += CGFloat(value)
+            case .subtract(let value): workspace.mfact -= CGFloat(value)
         }
 
         // Clamp
-        if container.mfact < 0.05 { container.mfact = 0.05 }
-        if container.mfact > 0.95 { container.mfact = 0.95 }
+        if workspace.mfact < 0.05 { workspace.mfact = 0.05 }
+        if workspace.mfact > 0.95 { workspace.mfact = 0.95 }
 
         return true
     }

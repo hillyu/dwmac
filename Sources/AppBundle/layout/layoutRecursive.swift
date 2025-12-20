@@ -5,9 +5,6 @@ extension Workspace {
     func layoutWorkspace() async throws {
         if isEffectivelyEmpty { return }
         let rect = workspaceMonitor.visibleRectPaddedByOuterGaps
-        // If monitors are aligned vertically and the monitor below has smaller width, then macOS may not allow the
-        // window on the upper monitor to take full width. rect.height - 1 resolves this problem
-        // But I also faced this problem in monitors horizontal configuration. ¯\_(ツ)_/¯
         try await layoutRecursive(rect.topLeftCorner, width: rect.width, height: rect.height - 1, virtual: rect, LayoutContext(self))
     }
 }
@@ -20,8 +17,12 @@ extension TreeNode {
             case .workspace(let workspace):
                 lastAppliedLayoutPhysicalRect = physicalRect
                 lastAppliedLayoutVirtualRect = virtual
-                try await workspace.rootTilingContainer.layoutRecursive(point, width: width, height: height, virtual: virtual, context)
-                for window in workspace.children.filterIsInstance(of: Window.self) {
+                
+                // Layout tiling windows
+                try await workspace.layoutMasterStack(point, width: width, height: height, virtual: virtual, context)
+                
+                // Layout floating windows
+                for window in workspace.children.filterIsInstance(of: Window.self).filter({ $0.isFloating }) {
                     window.lastAppliedLayoutPhysicalRect = nil
                     window.lastAppliedLayoutVirtualRect = nil
                     try await window.layoutFloatingWindow(context)
@@ -29,7 +30,9 @@ extension TreeNode {
             case .window(let window):
                 if window.windowId != currentlyManipulatedWithMouseWindowId {
                     lastAppliedLayoutVirtualRect = virtual
-                    if window.isFullscreen && window == context.workspace.rootTilingContainer.mostRecentWindowRecursive {
+                    // In flat model, no rootTilingContainer. Check if window is fullscreen and matches criteria.
+                    // Assuming mostRecentWindowRecursive logic works on Workspace now.
+                    if window.isFullscreen && window == context.workspace.mostRecentWindowRecursive {
                         lastAppliedLayoutPhysicalRect = nil
                         window.layoutFullscreen(context)
                     } else {
@@ -38,16 +41,9 @@ extension TreeNode {
                         window.setAxFrame(point, CGSize(width: width, height: height))
                     }
                 }
-            case .tilingContainer(let container):
-                lastAppliedLayoutPhysicalRect = physicalRect
-                lastAppliedLayoutVirtualRect = virtual
-                switch container.layout {
-                    case .masterStack:
-                        try await container.layoutMasterStack(point, width: width, height: height, virtual: virtual, context)
-                }
             case .macosMinimizedWindowsContainer, .macosFullscreenWindowsContainer,
                  .macosPopupWindowsContainer, .macosHiddenAppsWindowsContainer:
-                return // Nothing to do for weirdos
+                return
         }
     }
 }
@@ -67,7 +63,7 @@ extension Window {
     @MainActor
     fileprivate func layoutFloatingWindow(_ context: LayoutContext) async throws {
         let workspace = context.workspace
-        let currentMonitor = try await getCenter()?.monitorApproximation // Probably not idempotent
+        let currentMonitor = try await getCenter()?.monitorApproximation
         if let currentMonitor, let windowTopLeftCorner = try await getAxTopLeftCorner(), workspace != currentMonitor.activeWorkspace {
             let xProportion = (windowTopLeftCorner.x - currentMonitor.visibleRect.topLeftX) / currentMonitor.visibleRect.width
             let yProportion = (windowTopLeftCorner.y - currentMonitor.visibleRect.topLeftY) / currentMonitor.visibleRect.height
@@ -93,31 +89,53 @@ extension Window {
     }
 }
 
-extension TilingContainer {
+extension Workspace {
     @MainActor
     fileprivate func layoutMasterStack(_ point: CGPoint, width: CGFloat, height: CGFloat, virtual: Rect, _ context: LayoutContext) async throws {
-        if children.isEmpty { return }
-        if children.count == 1 {
-            try await children[0].layoutRecursive(point, width: width, height: height, virtual: virtual, context)
+        let windows = tilingWindows
+        if windows.isEmpty { return }
+        
+        if layout == .floating {
+             // Treat all as floating? But tilingWindows excludes floating.
+             // If layout is floating, maybe we don't tile them at all?
+             // DWM "Floating" layout usually means no windows are tiled.
+             return
+        }
+        
+        if windows.count == 1 {
+            try await windows[0].layoutRecursive(point, width: width, height: height, virtual: virtual, context)
             return
         }
 
-        let masterWidth = orientation == .h ? width * mfact : width
-        let masterHeight = orientation == .h ? height : height * mfact
+        let masterWidth: CGFloat
+        let masterHeight: CGFloat
+        let stackWidth: CGFloat
+        let stackHeight: CGFloat
+        
+        if orientation == .h {
+            masterWidth = width * mfact
+            masterHeight = height
+            stackWidth = width - masterWidth
+            stackHeight = height / CGFloat(windows.count - 1)
+        } else {
+            masterWidth = width
+            masterHeight = height * mfact
+            stackWidth = width / CGFloat(windows.count - 1)
+            stackHeight = height - masterHeight
+        }
 
-        // Master window
-        try await children[0].layoutRecursive(point, width: masterWidth, height: masterHeight, virtual: virtual, context)
+        // Master window (first in list)
+        try await windows[0].layoutRecursive(point, width: masterWidth, height: masterHeight, virtual: virtual, context)
 
         // Stack windows
-        let stackCount = children.count - 1
-        let stackWidth = orientation == .h ? width - masterWidth : width / CGFloat(stackCount)
-        let stackHeight = orientation == .h ? height / CGFloat(stackCount) : height - masterHeight
-
-        for i in 1 ..< children.count {
-            let stackPoint = orientation == .h
-                ? point.addingXOffset(masterWidth).addingYOffset(CGFloat(i - 1) * stackHeight)
-                : point.addingYOffset(masterHeight).addingXOffset(CGFloat(i - 1) * stackWidth)
-            try await children[i].layoutRecursive(stackPoint, width: stackWidth, height: stackHeight, virtual: virtual, context)
+        for i in 1 ..< windows.count {
+            let stackPoint: CGPoint
+            if orientation == .h {
+                stackPoint = point.addingXOffset(masterWidth).addingYOffset(CGFloat(i - 1) * stackHeight)
+            } else {
+                stackPoint = point.addingYOffset(masterHeight).addingXOffset(CGFloat(i - 1) * stackWidth)
+            }
+            try await windows[i].layoutRecursive(stackPoint, width: stackWidth, height: stackHeight, virtual: virtual, context)
         }
     }
 }

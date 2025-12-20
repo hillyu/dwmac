@@ -205,20 +205,18 @@ func parseCommandOrCommands(_ raw: TOMLValueConvertible) -> Parsed<[any Command]
     }
 
     if config.enableNormalizationFlattenContainers {
+        // Check for SplitCommand removed as it is no longer supported
+        /*
         let containsSplitCommand = config.modes.values.lazy.flatMap { $0.bindings.values }
             .flatMap { $0.commands }
             .contains { $0 is SplitCommand }
         if containsSplitCommand {
             errors += [.semantic(
-                .emptyRoot, // todo Make 'split' + flatten normalization prettier
-                """
-                The config contains:
-                1. usage of 'split' command
-                2. enable-normalization-flatten-containers = true
-                These two settings don't play nicely together. 'split' command has no effect when enable-normalization-flatten-containers is disabled.
-                """,
+                "Config contains 'split' command which is irrelevant when 'enable-normalization-flatten-containers' is enabled. " +
+                    "Please remove 'split' command from your config or disable 'enable-normalization-flatten-containers'"
             )]
         }
+        */
     }
     return (config, errors)
 }

@@ -128,7 +128,7 @@ extension String {
                     case .workspaceName: .success(.string(w.name))
                     case .workspaceVisible: .success(.bool(w.isVisible))
                     case .workspaceFocused: .success(.bool(focus.workspace == w))
-                    case .workspaceRootContainerLayout: .success(.string(toLayoutString(tc: w.rootTilingContainer)))
+                    case .workspaceRootContainerLayout: .success(.string(toLayoutString(w: w)))
                 }
             case (.monitor(let m), .monitor(let f)):
                 return switch f {
@@ -161,24 +161,30 @@ extension String {
     }
 }
 
-private func toLayoutString(tc: TilingContainer) -> String {
-    switch (tc.layout, tc.orientation) {
+private func toLayoutString(w: Workspace) -> String {
+    switch (w.layout, w.orientation) {
         case (.masterStack, .h): return LayoutCmdArgs.LayoutDescription.h_master_stack.rawValue
         case (.masterStack, .v): return LayoutCmdArgs.LayoutDescription.v_master_stack.rawValue
+        case (.floating, _): return LayoutCmdArgs.LayoutDescription.floating.rawValue
     }
 }
 
 private func toLayoutResult(w: Window) -> Result<Primitive, String> {
     guard let parent = w.parent else { return .failure("NULL-PARENT") }
+    guard let workspace = w.nodeWorkspace else { return .failure("NULL-WORKSPACE") }
+    
+    if w.isFloating {
+        return .success(.string(LayoutCmdArgs.LayoutDescription.floating.rawValue))
+    }
+    
     return switch getChildParentRelation(child: w, parent: parent) {
-        case .tiling(let tc): .success(.string(toLayoutString(tc: tc)))
+        case .tiling: .success(.string(toLayoutString(w: workspace)))
         case .floatingWindow: .success(.string(LayoutCmdArgs.LayoutDescription.floating.rawValue))
         case .macosNativeFullscreenWindow: .success(.string("macos_native_fullscreen"))
         case .macosNativeHiddenAppWindow: .success(.string("macos_native_window_of_hidden_app"))
         case .macosNativeMinimizedWindow: .success(.string("macos_native_minimized"))
         case .macosPopupWindow: .success(.string("NULL-WINDOW-LAYOUT"))
 
-        case .rootTilingContainer: .failure("Not possible")
         case .shimContainerRelation: .failure("Window cannot have a shim container relation")
     }
 }

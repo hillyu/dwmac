@@ -7,47 +7,47 @@ struct ResizeCommand: Command { // todo cover with tests
 
     func run(_ env: CmdEnv, _ io: CmdIo) -> Bool {
         guard let target = args.resolveTargetOrReportError(env, io) else { return false }
-
-        let candidates = target.windowOrNil?.parentsWithSelf
-            .filter { ($0.parent as? TilingContainer)?.layout == .masterStack }
-            ?? []
+        guard let window = target.windowOrNil else { return false }
+        guard let workspace = window.nodeWorkspace else { return false }
+        
+        if window.isFloating {
+             return io.err("resize command doesn't support floating windows yet")
+        }
+        if workspace.layout != .masterStack {
+             return false
+        }
 
         let orientation: Orientation?
-        let parent: TilingContainer?
-        let node: TreeNode?
         switch args.dimension.val {
             case .width:
                 orientation = .h
-                node = candidates.first(where: { ($0.parent as? TilingContainer)?.orientation == orientation })
-                parent = node?.parent as? TilingContainer
             case .height:
                 orientation = .v
-                node = candidates.first(where: { ($0.parent as? TilingContainer)?.orientation == orientation })
-                parent = node?.parent as? TilingContainer
             case .smart:
-                node = candidates.first
-                parent = node?.parent as? TilingContainer
-                orientation = parent?.orientation
+                orientation = workspace.orientation
             case .smartOpposite:
-                orientation = (candidates.first?.parent as? TilingContainer)?.orientation.opposite
-                node = candidates.first(where: { ($0.parent as? TilingContainer)?.orientation == orientation })
-                parent = node?.parent as? TilingContainer
+                orientation = workspace.orientation.opposite
         }
-        guard let parent else { return io.err("resize command doesn't support floating windows yet https://github.com/hillyu/Dwmac/issues/9") }
+        
         guard let orientation else { return false }
-        guard let node else { return false }
+        
+        if orientation != workspace.orientation {
+             return io.err("Can't resize in \(orientation) direction because container orientation is \(workspace.orientation)")
+        }
+
         let diff: CGFloat = switch args.units.val {
-            case .set(let unit): CGFloat(unit) - node.getWeight(orientation)
+            case .set(let unit): CGFloat(unit) - window.getWeight(orientation)
             case .add(let unit): CGFloat(unit)
             case .subtract(let unit): -CGFloat(unit)
         }
 
-        guard let childDiff = diff.div(parent.children.count - 1) else { return false }
-        parent.children.lazy
-            .filter { $0 != node }
-            .forEach { $0.setWeight(parent.orientation, $0.getWeight(parent.orientation) - childDiff) }
+        guard let childDiff = diff.div(workspace.children.count - 1) else { return false }
+        workspace.children.lazy
+            .filter { $0 != window }
+            // Only tiling windows have weight? No, TreeNode has weight.
+            .forEach { $0.setWeight(workspace.orientation, $0.getWeight(workspace.orientation) - childDiff) }
 
-        node.setWeight(orientation, node.getWeight(orientation) + diff)
+        window.setWeight(orientation, window.getWeight(orientation) + diff)
         return true
     }
 }

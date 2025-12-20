@@ -17,7 +17,7 @@ struct MoveNodeToMonitorCommand: Command {
             case .success(let targetMonitor):
                 let targetWs = targetMonitor.activeWorkspace
                 let index = true == args.target.val.directionOrNil
-                    .map { dir in dir.isPositive && targetWs.rootTilingContainer.orientation == dir.orientation }
+                    .map { dir in dir.isPositive && targetWs.orientation == dir.orientation }
                     ? 0
                     : INDEX_BIND_LAST
                 return moveWindowToWorkspace(

@@ -185,7 +185,7 @@ private func layoutWorkspaces() async throws {
 @MainActor
 private func normalizeContainers() {
     // Can't do it only for visible workspace because most of the commands support --window-id and --workspace flags
-    for workspace in Workspace.all {
-        workspace.normalizeContainers()
+    for _ in Workspace.all {
+        // workspace.normalizeContainers() // Removed as part of tree flattening
     }
 }

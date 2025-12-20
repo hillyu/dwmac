@@ -92,7 +92,7 @@ final class MacWindow: Window {
             deadWindowWorkspace == prevFocusedWorkspace && prevFocusedWorkspaceDate.distance(to: .now) < 1
         {
             switch parent.cases {
-                case .tilingContainer, .workspace, .macosHiddenAppsWindowsContainer, .macosFullscreenWindowsContainer:
+                case .workspace, .macosHiddenAppsWindowsContainer, .macosFullscreenWindowsContainer:
                     let deadWindowFocus = deadWindowWorkspace.toLiveFocus()
                     _ = setFocus(to: deadWindowFocus)
                     // Guard against "Apple Reminders popup" bug: https://github.com/hillyu/Dwmac/issues/201
@@ -169,7 +169,7 @@ final class MacWindow: Window {
                 )
                 setAxFrame(workspaceRect.topLeftCorner + pointInsideWorkspace, nil)
             case .macosNativeFullscreenWindow, .macosNativeHiddenAppWindow, .macosNativeMinimizedWindow,
-                 .macosPopupWindow, .tiling, .rootTilingContainer, .shimContainerRelation: break
+                 .macosPopupWindow, .tiling, .shimContainerRelation: break
         }
 
         self.prevUnhiddenProportionalPositionInsideWorkspaceRect = nil
@@ -214,38 +214,39 @@ extension Window {
 @MainActor
 private func unbindAndGetBindingDataForNewWindow(_ windowId: UInt32, _ macApp: MacApp, _ workspace: Workspace, window: Window?) async throws -> BindingData {
     let windowLevel = getWindowLevel(for: windowId)
-    return switch try await macApp.getAxUiElementWindowType(windowId, windowLevel) {
-        case .popup: BindingData(parent: macosPopupWindowsContainer, adaptiveWeight: WEIGHT_AUTO, index: INDEX_BIND_LAST)
-        case .dialog: BindingData(parent: workspace, adaptiveWeight: WEIGHT_AUTO, index: INDEX_BIND_LAST)
-        case .window: unbindAndGetBindingDataForNewTilingWindow(workspace, window: window)
+    switch try await macApp.getAxUiElementWindowType(windowId, windowLevel) {
+        case .popup: return BindingData(parent: macosPopupWindowsContainer, adaptiveWeight: WEIGHT_AUTO, index: INDEX_BIND_LAST)
+        case .dialog:
+            let bd = BindingData(parent: workspace, adaptiveWeight: WEIGHT_AUTO, index: INDEX_BIND_LAST)
+            window?.isFloating = true
+            return bd
+        case .window: return unbindAndGetBindingDataForNewTilingWindow(workspace, window: window)
     }
 }
 
 // The function is private because it's unsafe. It leaves the window in unbound state
 @MainActor
 private func unbindAndGetBindingDataForNewTilingWindow(_ workspace: Workspace, window: Window?) -> BindingData {
-    window?.unbindFromParent() // It's important to unbind to get correct data from below
-    let mruWindow = workspace.mostRecentWindowRecursive
-    if let mruWindow, let tilingParent = mruWindow.parent as? TilingContainer {
-        return BindingData(
-            parent: tilingParent,
-            adaptiveWeight: WEIGHT_AUTO,
-            index: mruWindow.ownIndex.orDie() + 1,
-        )
-    } else {
-        return BindingData(
-            parent: workspace.rootTilingContainer,
-            adaptiveWeight: WEIGHT_AUTO,
-            index: INDEX_BIND_LAST,
-        )
-    }
+    window?.unbindFromParent()
+    window?.isFloating = false
+    // Always append to end of list for new windows, or next to MRU?
+    // DWM puts new window in master (index 0).
+    // Let's put in master.
+    
+    // But existing logic was trying to be "smart" (next to MRU).
+    // Let's stick to DWM: Master
+    return BindingData(
+        parent: workspace,
+        adaptiveWeight: WEIGHT_AUTO,
+        index: 0, 
+    )
 }
 
 @MainActor
 func tryOnWindowDetected(_ window: Window) async throws {
     guard let parent = window.parent else { return }
     switch parent.cases {
-        case .tilingContainer, .workspace, .macosMinimizedWindowsContainer,
+        case .workspace, .macosMinimizedWindowsContainer,
              .macosFullscreenWindowsContainer, .macosHiddenAppsWindowsContainer:
             try await onWindowDetected(window)
         case .macosPopupWindowsContainer:
