@@ -63,17 +63,26 @@ extension Window {
     @MainActor
     fileprivate func layoutFloatingWindow(_ context: LayoutContext) async throws {
         let workspace = context.workspace
-        let currentMonitor = try await getCenter()?.monitorApproximation
-        if let currentMonitor, let windowTopLeftCorner = try await getAxTopLeftCorner(), workspace != currentMonitor.activeWorkspace {
-            let xProportion = (windowTopLeftCorner.x - currentMonitor.visibleRect.topLeftX) / currentMonitor.visibleRect.width
-            let yProportion = (windowTopLeftCorner.y - currentMonitor.visibleRect.topLeftY) / currentMonitor.visibleRect.height
+        let targetMonitor = workspace.workspaceMonitor
 
-            let moveTo = workspace.workspaceMonitor
-            setAxFrame(CGPoint(
-                x: moveTo.visibleRect.topLeftX + xProportion * moveTo.visibleRect.width,
-                y: moveTo.visibleRect.topLeftY + yProportion * moveTo.visibleRect.height,
-            ), nil)
+        // Optimization: Only check for monitor drift if the workspace's monitor has changed
+        // since the last layout of this window.
+        // This avoids expensive AX calls (getCenter/getAxTopLeftCorner) on every layout cycle.
+        if lastLayoutMonitor?.rect.topLeftCorner != targetMonitor.rect.topLeftCorner {
+            let currentMonitor = try await getCenter()?.monitorApproximation
+            if let currentMonitor, let windowTopLeftCorner = try await getAxTopLeftCorner(), workspace != currentMonitor.activeWorkspace {
+                let xProportion = (windowTopLeftCorner.x - currentMonitor.visibleRect.topLeftX) / currentMonitor.visibleRect.width
+                let yProportion = (windowTopLeftCorner.y - currentMonitor.visibleRect.topLeftY) / currentMonitor.visibleRect.height
+
+                let moveTo = workspace.workspaceMonitor
+                setAxFrame(CGPoint(
+                    x: moveTo.visibleRect.topLeftX + xProportion * moveTo.visibleRect.width,
+                    y: moveTo.visibleRect.topLeftY + yProportion * moveTo.visibleRect.height,
+                ), nil)
+            }
         }
+        lastLayoutMonitor = targetMonitor
+
         if isFullscreen {
             layoutFullscreen(context)
             isFullscreen = false
