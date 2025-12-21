@@ -19,6 +19,9 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 # Possible values: master-stack
 default-root-container-layout = 'master-stack'
 
+# mfact for master-stack
+default-mfact = 0.5
+
 # Possible values: horizontal|vertical|auto
 # 'auto' means: wide monitor (anything wider than high) gets horizontal orientation,
 #               tall monitor (anything higher than wide) gets vertical orientation

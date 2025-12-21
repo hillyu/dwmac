@@ -143,13 +143,6 @@ include::dwmac-resize.adoc[tags=synopsis]
 include::dwmac-resize.adoc[tags=purpose]
 include::dwmac-resize.adoc[tags=body]
 
-== split
-----
-include::dwmac-split.adoc[tags=synopsis]
-----
-include::dwmac-split.adoc[tags=purpose]
-include::dwmac-split.adoc[tags=body]
-
 == swap
 ----
 include::dwmac-swap.adoc[tags=synopsis]
