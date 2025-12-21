@@ -33,21 +33,25 @@ extension Workspace {
             return
         }
 
+        let gaps = context.resolvedGaps.inner
+        let gapH = CGFloat(gaps.horizontal)
+        let gapV = CGFloat(gaps.vertical)
+
         let masterWidth: CGFloat
         let masterHeight: CGFloat
         let stackWidth: CGFloat
         let stackHeight: CGFloat
 
         if orientation == .h {
-            masterWidth = width * mfact
+            masterWidth = (width - gapH) * mfact
             masterHeight = height
-            stackWidth = width - masterWidth
-            stackHeight = height / CGFloat(windows.count - 1)
+            stackWidth = width - masterWidth - gapH
+            stackHeight = (height - CGFloat(windows.count - 2) * gapV) / CGFloat(windows.count - 1)
         } else {
             masterWidth = width
-            masterHeight = height * mfact
-            stackWidth = width / CGFloat(windows.count - 1)
-            stackHeight = height - masterHeight
+            masterHeight = (height - gapV) * mfact
+            stackWidth = (width - CGFloat(windows.count - 2) * gapH) / CGFloat(windows.count - 1)
+            stackHeight = height - masterHeight - gapV
         }
 
         // Master window (first in list)
@@ -56,9 +60,9 @@ extension Workspace {
         // Stack windows
         for i in 1 ..< windows.count {
             let stackPoint: CGPoint = if orientation == .h {
-                point.addingXOffset(masterWidth).addingYOffset(CGFloat(i - 1) * stackHeight)
+                point.addingXOffset(masterWidth + gapH).addingYOffset(CGFloat(i - 1) * (stackHeight + gapV))
             } else {
-                point.addingYOffset(masterHeight).addingXOffset(CGFloat(i - 1) * stackWidth)
+                point.addingYOffset(masterHeight + gapV).addingXOffset(CGFloat(i - 1) * (stackWidth + gapH))
             }
             try await layoutWindow(windows[i], stackPoint, stackWidth, stackHeight, virtual, context)
         }
