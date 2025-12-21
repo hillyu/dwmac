@@ -37,6 +37,6 @@ func moveWindowToWorkspace(_ window: Window, _ targetWorkspace: Workspace, _ io:
         return !failIfNoop
     }
     // Both floating and tiling windows are bound to the workspace directly now.
-    window.bind(to: targetWorkspace, adaptiveWeight: WEIGHT_AUTO, index: index)
+    window.bind(to: targetWorkspace, index: index)
     return focusFollowsWindow ? window.focusWindow() : true
 }

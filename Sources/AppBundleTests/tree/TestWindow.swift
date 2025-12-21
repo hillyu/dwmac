@@ -5,15 +5,15 @@ final class TestWindow: Window, CustomStringConvertible {
     private var _rect: Rect?
 
     @MainActor
-    private init(_ id: UInt32, _ parent: NonLeafTreeNodeObject, _ adaptiveWeight: CGFloat, _ rect: Rect?) {
+    private init(_ id: UInt32, _ parent: NonLeafTreeNodeObject, _ rect: Rect?) {
         _rect = rect
-        super.init(id: id, TestApp.shared, lastFloatingSize: nil, parent: parent, adaptiveWeight: adaptiveWeight, index: INDEX_BIND_LAST)
+        super.init(id: id, TestApp.shared, lastFloatingSize: nil, parent: parent, index: INDEX_BIND_LAST)
     }
 
     @discardableResult
     @MainActor
-    static func new(id: UInt32, parent: NonLeafTreeNodeObject, adaptiveWeight: CGFloat = 1, rect: Rect? = nil) -> TestWindow {
-        let wi = TestWindow(id, parent, adaptiveWeight, rect)
+    static func new(id: UInt32, parent: NonLeafTreeNodeObject, rect: Rect? = nil) -> TestWindow {
+        let wi = TestWindow(id, parent, rect)
         TestApp.shared._windows.append(wi)
         return wi
     }

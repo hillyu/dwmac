@@ -75,7 +75,6 @@ private func moveTilingWindow(_ window: Window) {
         }
         window.bind(
             to: targetWorkspace,
-            adaptiveWeight: WEIGHT_AUTO,
             index: index, // This index is in `children`, which mixes types. Might be buggy if not careful.
             // But bind() inserts at index.
         )
@@ -94,14 +93,14 @@ func swapWindows(_ window1: Window, _ window2: Window) {
         let binding2 = window2.unbindFromParent()
         let binding1 = window1.unbindFromParent()
 
-        window2.bind(to: binding1.parent, adaptiveWeight: binding1.adaptiveWeight, index: binding1.index)
-        window1.bind(to: binding2.parent, adaptiveWeight: binding2.adaptiveWeight, index: binding2.index)
+        window2.bind(to: binding1.parent, index: binding1.index)
+        window1.bind(to: binding2.parent, index: binding2.index)
     } else {
         let binding1 = window1.unbindFromParent()
         let binding2 = window2.unbindFromParent()
 
-        window1.bind(to: binding2.parent, adaptiveWeight: binding2.adaptiveWeight, index: binding2.index)
-        window2.bind(to: binding1.parent, adaptiveWeight: binding1.adaptiveWeight, index: binding1.index)
+        window1.bind(to: binding2.parent, index: binding2.index)
+        window2.bind(to: binding1.parent, index: binding1.index)
     }
 }
 

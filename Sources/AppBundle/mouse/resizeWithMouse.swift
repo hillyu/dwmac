@@ -27,14 +27,9 @@ func resizedObs(_ obs: AXObserver, ax: AXUIElement, notif: CFString, data: Unsaf
 func resetManipulatedWithMouseIfPossible() async throws {
     if currentlyManipulatedWithMouseWindowId != nil {
         currentlyManipulatedWithMouseWindowId = nil
-        for workspace in Workspace.all {
-            workspace.resetResizeWeightBeforeResizeRecursive()
-        }
         scheduleRefreshSession(.resetManipulatedWithMouse, optimisticallyPreLayoutWorkspaces: true)
     }
 }
-
-private let adaptiveWeightBeforeResizeWithMouseKey = TreeNodeUserDataKey<CGFloat>(key: "adaptiveWeightBeforeResizeWithMouseKey")
 
 @MainActor
 private func resizeWithMouse(_ window: Window) async throws { // todo cover with tests
@@ -51,21 +46,4 @@ private func resizeWithMouse(_ window: Window) async throws { // todo cover with
 
     // For now, we disable mouse resize logic to fix compilation.
     // DWM typically uses keyboard for resizing master area.
-}
-
-extension TreeNode {
-    @MainActor
-    private func getWeightBeforeResize(_ orientation: Orientation) -> CGFloat {
-        let currentWeight = getWeight(orientation) // Check assertions
-        return getUserData(key: adaptiveWeightBeforeResizeWithMouseKey)
-            ?? (lastAppliedLayoutVirtualRect?.getDimension(orientation) ?? currentWeight)
-            .also { putUserData(key: adaptiveWeightBeforeResizeWithMouseKey, data: $0) }
-    }
-
-    fileprivate func resetResizeWeightBeforeResizeRecursive() {
-        cleanUserData(key: adaptiveWeightBeforeResizeWithMouseKey)
-        for child in children {
-            child.resetResizeWeightBeforeResizeRecursive()
-        }
-    }
 }

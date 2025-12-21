@@ -12,11 +12,11 @@ open class Window: TreeNode, Hashable {
     var lastLayoutMonitor: Monitor? = nil
 
     @MainActor
-    init(id: UInt32, _ app: any AbstractApp, lastFloatingSize: CGSize?, parent: NonLeafTreeNodeObject, adaptiveWeight: CGFloat, index: Int) {
+    init(id: UInt32, _ app: any AbstractApp, lastFloatingSize: CGSize?, parent: NonLeafTreeNodeObject, index: Int) {
         self.windowId = id
         self.app = app
         self.lastFloatingSize = lastFloatingSize
-        super.init(parent: parent, adaptiveWeight: adaptiveWeight, index: index)
+        super.init(parent: parent, index: index)
     }
 
     @MainActor static func get(byId windowId: UInt32) -> Window? { // todo make non optional
@@ -58,7 +58,7 @@ extension Window {
     @MainActor
     func bindAsFloatingWindow(to workspace: Workspace) -> BindingData? {
         isFloating = true
-        return bind(to: workspace, adaptiveWeight: WEIGHT_AUTO, index: INDEX_BIND_LAST)
+        return bind(to: workspace, index: INDEX_BIND_LAST)
     }
 
     func asMacWindow() -> MacWindow { self as! MacWindow }

@@ -3,7 +3,7 @@ import Common
 final class MacosFullscreenWindowsContainer: TreeNode, NonLeafTreeNodeObject {
     @MainActor
     init(parent: Workspace) {
-        super.init(parent: parent, adaptiveWeight: 1, index: INDEX_BIND_LAST)
+        super.init(parent: parent, index: INDEX_BIND_LAST)
     }
 }
 
@@ -11,7 +11,7 @@ final class MacosFullscreenWindowsContainer: TreeNode, NonLeafTreeNodeObject {
 final class MacosHiddenAppsWindowsContainer: TreeNode, NonLeafTreeNodeObject {
     @MainActor
     init(parent: Workspace) {
-        super.init(parent: parent, adaptiveWeight: 1, index: INDEX_BIND_LAST)
+        super.init(parent: parent, index: INDEX_BIND_LAST)
     }
 }
 
@@ -19,7 +19,7 @@ final class MacosHiddenAppsWindowsContainer: TreeNode, NonLeafTreeNodeObject {
 final class MacosMinimizedWindowsContainer: TreeNode, NonLeafTreeNodeObject {
     @MainActor
     fileprivate init() {
-        super.init(parent: NilTreeNode.instance, adaptiveWeight: 1, index: INDEX_BIND_LAST)
+        super.init(parent: NilTreeNode.instance, index: INDEX_BIND_LAST)
     }
 }
 
@@ -29,6 +29,6 @@ final class MacosMinimizedWindowsContainer: TreeNode, NonLeafTreeNodeObject {
 final class MacosPopupWindowsContainer: TreeNode, NonLeafTreeNodeObject {
     @MainActor
     fileprivate init() {
-        super.init(parent: NilTreeNode.instance, adaptiveWeight: 1, index: INDEX_BIND_LAST)
+        super.init(parent: NilTreeNode.instance, index: INDEX_BIND_LAST)
     }
 }

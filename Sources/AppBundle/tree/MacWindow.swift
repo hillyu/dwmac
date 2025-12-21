@@ -6,9 +6,9 @@ final class MacWindow: Window {
     private var prevUnhiddenProportionalPositionInsideWorkspaceRect: CGPoint?
 
     @MainActor
-    private init(_ id: UInt32, _ actor: MacApp, lastFloatingSize: CGSize?, parent: NonLeafTreeNodeObject, adaptiveWeight: CGFloat, index: Int) {
+    private init(_ id: UInt32, _ actor: MacApp, lastFloatingSize: CGSize?, parent: NonLeafTreeNodeObject, index: Int) {
         self.macApp = actor
-        super.init(id: id, actor, lastFloatingSize: lastFloatingSize, parent: parent, adaptiveWeight: adaptiveWeight, index: index)
+        super.init(id: id, actor, lastFloatingSize: lastFloatingSize, parent: parent, index: index)
     }
 
     @MainActor static var allWindowsMap: [UInt32: MacWindow] = [:]
@@ -30,7 +30,7 @@ final class MacWindow: Window {
 
         // atomic synchronous section
         if let existing = allWindowsMap[windowId] { return existing }
-        let window = MacWindow(windowId, macApp, lastFloatingSize: rect?.size, parent: data.parent, adaptiveWeight: data.adaptiveWeight, index: data.index)
+        let window = MacWindow(windowId, macApp, lastFloatingSize: rect?.size, parent: data.parent, index: data.index)
         allWindowsMap[windowId] = window
 
         try await debugWindowsIfRecording(window)
@@ -206,7 +206,7 @@ extension Window {
         let data = forceTile
             ? unbindAndGetBindingDataForNewTilingWindow(workspace, window: self)
             : try await unbindAndGetBindingDataForNewWindow(self.asMacWindow().windowId, self.asMacWindow().macApp, workspace, window: self)
-        bind(to: data.parent, adaptiveWeight: data.adaptiveWeight, index: data.index)
+        bind(to: data.parent, index: data.index)
     }
 }
 
@@ -215,9 +215,9 @@ extension Window {
 private func unbindAndGetBindingDataForNewWindow(_ windowId: UInt32, _ macApp: MacApp, _ workspace: Workspace, window: Window?) async throws -> BindingData {
     let windowLevel = getWindowLevel(for: windowId)
     switch try await macApp.getAxUiElementWindowType(windowId, windowLevel) {
-        case .popup: return BindingData(parent: macosPopupWindowsContainer, adaptiveWeight: WEIGHT_AUTO, index: INDEX_BIND_LAST)
+        case .popup: return BindingData(parent: macosPopupWindowsContainer, index: INDEX_BIND_LAST)
         case .dialog:
-            let bd = BindingData(parent: workspace, adaptiveWeight: WEIGHT_AUTO, index: INDEX_BIND_LAST)
+            let bd = BindingData(parent: workspace, index: INDEX_BIND_LAST)
             window?.isFloating = true
             return bd
         case .window: return unbindAndGetBindingDataForNewTilingWindow(workspace, window: window)
@@ -237,7 +237,6 @@ private func unbindAndGetBindingDataForNewTilingWindow(_ workspace: Workspace, w
     // Let's stick to DWM: Master
     return BindingData(
         parent: workspace,
-        adaptiveWeight: WEIGHT_AUTO,
         index: 0,
     )
 }

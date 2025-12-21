@@ -48,26 +48,6 @@ final class MoveCommandTest: XCTestCase {
         )
     }
 
-    func testSwap_preserveWeight() async throws {
-        let workspace = Workspace.get(byName: name)
-        // adaptiveWeight is only relevant for tiling windows in appropriate layout.
-        // In Master-Stack, windows don't have individual weights in the same way as containers,
-        // but maybe we simulate it?
-        // Actually, let's just create windows.
-        let window1 = TestWindow.new(id: 1, parent: workspace, adaptiveWeight: 1)
-        let window2 = TestWindow.new(id: 2, parent: workspace, adaptiveWeight: 2)
-        _ = window2.focusWindow()
-
-        // [1 (w1), 2 (w2)]
-        // Move 2 left -> [2, 1]
-        try await MoveCommand(args: MoveCmdArgs(rawArgs: [], .left)).run(.defaultEnv, .emptyStdin)
-
-        // Weights might be swapped or preserved depending on logic.
-        // In new arch, weights are likely associated with the window itself.
-        assertEquals(window2.hWeight, 2)
-        assertEquals(window1.hWeight, 1)
-    }
-
     func testCreateImplicitContainer() async throws {
         // Implicit container creation (split) is no longer a thing in flat layout usually?
         // Or does "move up" create a vertical split?

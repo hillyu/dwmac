@@ -75,7 +75,7 @@ struct FrozenWorkspace: Sendable {
             switch child {
                 case .window(let w):
                     guard let window = MacWindow.get(byId: w.id) else { continue }
-                    window.bind(to: workspace, adaptiveWeight: w.weight, index: index)
+                    window.bind(to: workspace, index: index)
                 case .container:
                     die("Containers not supported in restoration")
             }

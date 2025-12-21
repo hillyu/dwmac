@@ -6,7 +6,6 @@ open class TreeNode: Equatable, AeroAny {
     var children: [TreeNode] { _children }
     fileprivate final weak var _parent: NonLeafTreeNodeObject? = nil
     final var parent: NonLeafTreeNodeObject? { _parent }
-    private var adaptiveWeight: CGFloat
     private let _mruChildren: MruStack<TreeNode> = MruStack()
     // Usages:
     // - resize with mouse
@@ -21,78 +20,22 @@ open class TreeNode: Equatable, AeroAny {
     var isBound: Bool { parent != nil } // todo drop, once https://github.com/hillyu/Dwmac/issues/1215 is fixed
 
     @MainActor
-    init(parent: NonLeafTreeNodeObject, adaptiveWeight: CGFloat, index: Int) {
-        self.adaptiveWeight = adaptiveWeight
-        bind(to: parent, adaptiveWeight: adaptiveWeight, index: index)
+    init(parent: NonLeafTreeNodeObject, index: Int) {
+        bind(to: parent, index: index)
     }
 
-    fileprivate init() {
-        adaptiveWeight = 0
-    }
-
-    /// See: ``getWeight(_:)``
-    func setWeight(_ targetOrientation: Orientation, _ newValue: CGFloat) {
-        guard let parent else { die("Can't change weight if TreeNode doesn't have parent") }
-        switch getChildParentRelation(child: self, parent: parent) {
-            case .tiling:
-                guard let workspace = parent as? Workspace else { die("Parent of tiling node must be Workspace") }
-                if workspace.orientation != targetOrientation {
-                    die("You can't change \(targetOrientation) weight of nodes located in \(workspace.orientation) container")
-                }
-                if workspace.layout != .masterStack {
-                    die("Weight can be changed only for nodes whose parent has 'master-stack' layout")
-                }
-                adaptiveWeight = newValue
-            default:
-                die("Can't change weight")
-        }
-    }
-
-    /// Weight itself doesn't make sense. The parent container controls semantics of weight
-    @MainActor
-    func getWeight(_ targetOrientation: Orientation) -> CGFloat {
-        guard let parent else { die("Weight doesn't make sense for containers without parent") }
-        switch getChildParentRelation(child: self, parent: parent) {
-            case .tiling:
-                guard let workspace = parent as? Workspace else { die("Parent of tiling node must be Workspace") }
-                return workspace.orientation == targetOrientation ? adaptiveWeight : workspace.getWeight(targetOrientation)
-            // case .rootTilingContainer: parent.getWeight(targetOrientation)
-            case .floatingWindow, .macosNativeFullscreenWindow: return dieT("Weight doesn't make sense for floating windows")
-            case .macosNativeMinimizedWindow: return dieT("Weight doesn't make sense for minimized windows")
-            case .macosPopupWindow: return dieT("Weight doesn't make sense for popup windows")
-            case .macosNativeHiddenAppWindow: return dieT("Weight doesn't make sense for windows of hidden apps")
-            case .shimContainerRelation: return dieT("Weight doesn't make sense for stub containers")
-        }
-    }
+    fileprivate init() {}
 
     @MainActor
     @discardableResult
-    func bind(to newParent: NonLeafTreeNodeObject, adaptiveWeight: CGFloat, index: Int) -> BindingData? {
+    func bind(to newParent: NonLeafTreeNodeObject, index: Int) -> BindingData? {
         let result = unbindIfBound()
 
         if newParent === NilTreeNode.instance {
             return result
         }
-        let relation = getChildParentRelation(child: self, parent: newParent) // Side effect: verify relation
-        if adaptiveWeight == WEIGHT_AUTO {
-            switch relation {
-                case .tiling:
-                    if let workspace = newParent as? Workspace {
-                        let tilingChildren = workspace.children.filter {
-                            getChildParentRelation(child: $0, parent: workspace) == .tiling
-                        }
-                        self.adaptiveWeight = CGFloat(tilingChildren.sumOfDouble { $0.getWeight(workspace.orientation) }).div(tilingChildren.count) ?? 1
-                    } else {
-                        self.adaptiveWeight = 1
-                    }
-                case .floatingWindow, .macosNativeFullscreenWindow,
-                     /*.rootTilingContainer,*/ .macosNativeMinimizedWindow,
-                     .shimContainerRelation, .macosPopupWindow, .macosNativeHiddenAppWindow:
-                    self.adaptiveWeight = WEIGHT_DOESNT_MATTER
-            }
-        } else {
-            self.adaptiveWeight = adaptiveWeight
-        }
+        _ = getChildParentRelation(child: self, parent: newParent) // Side effect: verify relation
+
         newParent._children.insert(self, at: index != INDEX_BIND_LAST ? index : newParent._children.count)
         _parent = newParent
         unboundStacktrace = nil
@@ -112,7 +55,7 @@ open class TreeNode: Equatable, AeroAny {
         self._parent = nil
         unboundStacktrace = getStringStacktrace()
 
-        return BindingData(parent: _parent, adaptiveWeight: adaptiveWeight, index: index)
+        return BindingData(parent: _parent, index: index)
     }
 
     func markAsMostRecentChild() {
@@ -148,17 +91,10 @@ struct TreeNodeUserDataKey<T> {
     let key: String
 }
 
-let WEIGHT_DOESNT_MATTER = CGFloat(-2)
-/// Splits containers evenly if tiling.
-///
-/// Reset weight is bind to workspace (aka "floating windows")
-let WEIGHT_AUTO = CGFloat(-1)
-
 let INDEX_BIND_LAST = -1
 
 struct BindingData {
     let parent: NonLeafTreeNodeObject
-    let adaptiveWeight: CGFloat
     let index: Int
 }
 

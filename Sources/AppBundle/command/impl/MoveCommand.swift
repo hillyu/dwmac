@@ -32,7 +32,6 @@ struct MoveCommand: Command {
             let targetWindow = windows[targetIndex]
             if !workspace.children.contains(targetWindow) { return false }
 
-            let weight = currentWindow.getWeight(workspace.orientation)
             currentWindow.unbindFromParent()
             // Re-find target index as it might have shifted
             guard let newTargetIndex = workspace.children.firstIndex(of: targetWindow) else { return false }
@@ -43,7 +42,7 @@ struct MoveCommand: Command {
                 newTargetIndex
             }
 
-            currentWindow.bind(to: workspace, adaptiveWeight: weight, index: insertionIndex)
+            currentWindow.bind(to: workspace, index: insertionIndex)
             return true
         } else {
             return hitWorkspaceBoundaries(currentWindow, workspace, io, args, direction, env)

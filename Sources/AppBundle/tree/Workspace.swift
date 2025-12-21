@@ -43,7 +43,7 @@ final class Workspace: TreeNode, NonLeafTreeNodeObject, Hashable, Comparable {
     private init(_ name: String) {
         self.name = name
         self.nameLogicalSegments = name.toLogicalSegments()
-        super.init(parent: NilTreeNode.instance, adaptiveWeight: 0, index: 0)
+        super.init(parent: NilTreeNode.instance, index: 0)
     }
 
     @MainActor static var all: [Workspace] {
@@ -62,14 +62,6 @@ final class Workspace: TreeNode, NonLeafTreeNodeObject, Hashable, Comparable {
 
     nonisolated static func < (lhs: Workspace, rhs: Workspace) -> Bool {
         lhs.nameLogicalSegments < rhs.nameLogicalSegments
-    }
-
-    override func getWeight(_ targetOrientation: Orientation) -> CGFloat {
-        workspaceMonitor.visibleRectPaddedByOuterGaps.getDimension(targetOrientation)
-    }
-
-    override func setWeight(_ targetOrientation: Orientation, _ newValue: CGFloat) {
-        die("It's not possible to change weight of Workspace")
     }
 
     @MainActor

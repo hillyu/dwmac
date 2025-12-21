@@ -16,7 +16,7 @@ struct MacosNativeMinimizeCommand: Command {
         let newState: Bool = try await !window.isMacosMinimized
         window.asMacWindow().setNativeMinimized(newState)
         if newState { // minimize
-            window.bind(to: macosMinimizedWindowsContainer, adaptiveWeight: 1, index: INDEX_BIND_LAST)
+            window.bind(to: macosMinimizedWindowsContainer, index: INDEX_BIND_LAST)
             return true
         } else { // unminimize
             return io.err("The command is uncapable of unminimizing windows yet. Sorry") // dead code. should never be possible, see the comment above
