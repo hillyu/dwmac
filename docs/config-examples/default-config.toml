@@ -22,6 +22,10 @@ default-root-container-layout = 'master-stack'
 # mfact for master-stack
 default-mfact = 0.5
 
+# Whether new windows should be attached to the master position (index 0) or the last position.
+# Fallback value (if you omit the key): attach-below = false
+attach-below = false
+
 # Possible values: horizontal|vertical|auto
 # 'auto' means: wide monitor (anything wider than high) gets horizontal orientation,
 #               tall monitor (anything higher than wide) gets vertical orientation

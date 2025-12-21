@@ -56,8 +56,6 @@ dwmac -h;
 
     | resize [--window-id <window_id>] (smart|smart-opposite|width|height) [+|-]<number> [--window-id <window_id>]
 
-    | split [--window-id <window_id>] (horizontal|vertical|opposite) [--window-id <window_id>]
-
     | swap [--swap-focus|--wrap-around|--window-id <window_id>]... (left|down|up|right|dfs-next|dfs-prev) [--swap-focus|--wrap-around|--window-id <window_id>]...
 
     | summon-workspace [--fail-if-noop] <workspace> [--fail-if-noop]

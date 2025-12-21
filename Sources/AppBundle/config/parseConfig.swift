@@ -111,6 +111,7 @@ private let configParser: [String: any ParserProtocol<Config>] = [
     persistentWorkspacesKey: Parser(\.persistentWorkspaces, parsePersistentWorkspaces),
     "exec-on-workspace-change": Parser(\.execOnWorkspaceChange, parseArrayOfStrings),
     "default-mfact": Parser(\.defaultMfact, parseFloat),
+    "attach-below": Parser(\.attachBelow, parseBool),
     "exec": Parser(\.execConfig, parseExecConfig),
 
     keyMappingConfigRootKey: Parser(\.keyMapping, skipParsing(Config().keyMapping)), // Parsed manually

@@ -229,15 +229,10 @@ private func unbindAndGetBindingDataForNewWindow(_ windowId: UInt32, _ macApp: M
 private func unbindAndGetBindingDataForNewTilingWindow(_ workspace: Workspace, window: Window?) -> BindingData {
     window?.unbindFromParent()
     window?.isFloating = false
-    // Always append to end of list for new windows, or next to MRU?
-    // DWM puts new window in master (index 0).
-    // Let's put in master.
 
-    // But existing logic was trying to be "smart" (next to MRU).
-    // Let's stick to DWM: Master
     return BindingData(
         parent: workspace,
-        index: 0,
+        index: config.attachBelow ? INDEX_BIND_LAST : 0,
     )
 }
 

@@ -244,10 +244,9 @@ You can nest containers as deeply as you want to.
 You can navigate in the tree in 4 possible cardinal directions (left, down, up, right).
 You use xref:commands.adoc#focus[focus command] to do that.
 
-The tree structure can be changed with three commands:
+The tree structure can be changed with one command:
 
 . xref:commands.adoc#move[move]
-. xref:commands.adoc#split[split]
 
 [#layouts]
 === Layouts

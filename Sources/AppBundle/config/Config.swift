@@ -47,6 +47,7 @@ struct Config: ConvenienceCopyable {
     var persistentWorkspaces: OrderedSet<String> = []
     var execOnWorkspaceChange: [String] = [] // todo deprecate
     var defaultMfact: Double = 0.5
+    var attachBelow: Bool = false
     var keyMapping = KeyMapping()
     var execConfig: ExecConfig = ExecConfig()
 
