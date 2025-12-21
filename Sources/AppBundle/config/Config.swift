@@ -46,6 +46,7 @@ struct Config: ConvenienceCopyable {
     var enableNormalizationOppositeOrientationForNestedContainers: Bool = true
     var persistentWorkspaces: OrderedSet<String> = []
     var execOnWorkspaceChange: [String] = [] // todo deprecate
+    var defaultMfact: Double = 0.5
     var keyMapping = KeyMapping()
     var execConfig: ExecConfig = ExecConfig()
 

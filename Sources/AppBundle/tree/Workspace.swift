@@ -37,12 +37,13 @@ final class Workspace: TreeNode, NonLeafTreeNodeObject, Hashable, Comparable {
     fileprivate var assignedMonitorPoint: CGPoint? = nil
     var layout: Layout = .masterStack
     var orientation: Orientation = .h
-    var mfact: CGFloat = 0.5
+    var mfact: CGFloat
 
     @MainActor
     private init(_ name: String) {
         self.name = name
         self.nameLogicalSegments = name.toLogicalSegments()
+        self.mfact = CGFloat(config.defaultMfact)
         super.init(parent: NilTreeNode.instance, index: 0)
     }
 

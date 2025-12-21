@@ -5,6 +5,7 @@ import HotKey
 import TOMLKit
 
 @MainActor private var hotkeys: [String: HotKey] = [:]
+@MainActor private var repeatingTasks: [String: Task<Void, Never>] = [:]
 
 @MainActor func resetHotKeys() {
     // Explicitly unregister all hotkeys. We cannot always rely on destruction of the HotKey object to trigger
@@ -13,6 +14,10 @@ import TOMLKit
         key.isEnabled = false
     }
     hotkeys = [:]
+    for task in repeatingTasks.values {
+        task.cancel()
+    }
+    repeatingTasks = [:]
 }
 
 extension HotKey {
@@ -30,15 +35,30 @@ extension HotKey {
 @MainActor func activateMode(_ targetMode: String?) async throws {
     let targetBindings = targetMode.flatMap { config.modes[$0] }?.bindings ?? [:]
     for binding in targetBindings.values where !hotkeys.keys.contains(binding.descriptionWithKeyCode) {
-        hotkeys[binding.descriptionWithKeyCode] = HotKey(key: binding.keyCode, modifiers: binding.modifiers, keyDownHandler: {
-            Task {
+        let description = binding.descriptionWithKeyCode
+        hotkeys[description] = HotKey(key: binding.keyCode, modifiers: binding.modifiers, keyDownHandler: {
+            repeatingTasks[description]?.cancel()
+            repeatingTasks[description] = Task {
                 if let activeMode {
-                    try await runLightSession(.hotkeyBinding, .checkServerIsEnabledOrDie) { () throws in
-                        _ = try await config.modes[activeMode]?.bindings[binding.descriptionWithKeyCode]?.commands
+                    try? await runLightSession(.hotkeyBinding, .checkServerIsEnabledOrDie) { () throws in
+                        _ = try await config.modes[activeMode]?.bindings[description]?.commands
                             .runCmdSeq(.defaultEnv, .emptyStdin)
+                    }
+                    try? await Task.sleep(nanoseconds: 300_000_000) // Initial delay
+                    if Task.isCancelled { return }
+
+                    while !Task.isCancelled {
+                        try? await runLightSession(.hotkeyBinding, .checkServerIsEnabledOrDie) { () throws in
+                            _ = try await config.modes[activeMode]?.bindings[description]?.commands
+                                .runCmdSeq(.defaultEnv, .emptyStdin)
+                        }
+                        try? await Task.sleep(nanoseconds: 100_000_000) // Repeat interval
                     }
                 }
             }
+        }, keyUpHandler: {
+            repeatingTasks[description]?.cancel()
+            repeatingTasks[description] = nil
         })
     }
     for (binding, key) in hotkeys {
@@ -46,6 +66,8 @@ extension HotKey {
             key.isEnabled = true
         } else {
             key.isEnabled = false
+            repeatingTasks[binding]?.cancel()
+            repeatingTasks[binding] = nil
         }
     }
     let oldMode = activeMode
