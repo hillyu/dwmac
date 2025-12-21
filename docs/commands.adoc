@@ -50,6 +50,13 @@ include::./dwmac-focus-back-and-forth.adoc[tags=synopsis]
 include::./dwmac-focus-back-and-forth.adoc[tags=purpose]
 include::./dwmac-focus-back-and-forth.adoc[tags=body]
 
+== focus-master-or-back
+----
+include::dwmac-focus-master-or-back.adoc[tags=synopsis]
+----
+include::dwmac-focus-master-or-back.adoc[tags=purpose]
+include::dwmac-focus-master-or-back.adoc[tags=body]
+
 == focus-monitor
 ----
 include::dwmac-focus-monitor.adoc[tags=synopsis]
