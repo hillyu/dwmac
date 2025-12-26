@@ -282,20 +282,7 @@ In a horizontal layout with 3 windows:
 * Window 1 (Master) takes the left part of the screen.
 * Window 2 and Window 3 share the right part of the screen, stacked on top of each other.
 
-[mermaid, format=svg]
-....
-graph TD
-    subgraph "Screen"
-        direction LR
-        Master["Window 1 (Master)"]
-        subgraph Stack
-            direction TB
-            W2["Window 2"]
-            W3["Window 3"]
-        end
-        Master --- Stack
-    end
-....
+image::./assets/layout-horizontal.svg[Horizontal Layout Diagram, align="center"]
 ====
 
 [#floating-windows]

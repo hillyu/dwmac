@@ -22,8 +22,7 @@ build-site() {
     cd .site
         # Delete "dwmac " prefifx in synopsis
         sed -E -i '' '/tag::synopsis/, /end::synopsis/ s/^(dwmac | {10})//' dwmac*
-        export PATH="$(pwd)/../node_modules/.bin:${PATH}"
-        bundler exec asciidoctor -r asciidoctor-diagram -a docinfo=shared ./guide.adoc ./commands.adoc ./goodies.adoc
+        bundler exec asciidoctor -a docinfo=shared ./guide.adoc ./commands.adoc ./goodies.adoc
         cp guide.html index.html
         cp goodies.html goodness.html # backwards compatibility
         rm -rf ./*.adoc
