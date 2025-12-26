@@ -69,7 +69,46 @@ struct MenuBarLabel: View {
                         itemView(for: trayItem)
                             .opacity(item.isVisible ? 1 : 0.5)
                     }
+                case .i3OrderedWithIcons:
+                    let modeItem = viewModel.trayItems.first { $0.type == .mode }
+                    if let modeItem {
+                        itemView(for: modeItem)
+                        modeSeparator(with: .monospaced)
+                    }
+                    let orderedWorkspaces = viewModel.workspaces.filter { !$0.isEffectivelyEmpty || $0.isVisible }
+                    ForEach(orderedWorkspaces, id: \.name) { item in
+                        let trayItem = TrayItem(
+                            type: .workspace,
+                            name: item.name,
+                            isActive: item.isFocused,
+                            hasFullscreenWindows: item.hasFullscreenWindows,
+                        )
+                        HStack(spacing: 4) {
+                            itemView(for: trayItem)
+                            if !item.appBundleIds.isEmpty {
+                                HStack(spacing: 2) {
+                                    ForEach(item.appBundleIds.prefix(3), id: \.self) { bundleId in
+                                        appIcon(for: bundleId)
+                                    }
+                                }
+                            }
+                        }
+                        .opacity(item.isVisible ? 1 : 0.5)
+                    }
             }
+        }
+    }
+
+    private func appIcon(for bundleId: String) -> some View {
+        if let path = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId)?.path,
+           let image = NSWorkspace.shared.icon(forFile: path).cgImage(forProposedRect: nil, context: nil, hints: nil)
+        {
+            return Image(decorative: image, scale: 1.0)
+                .resizable()
+                .frame(width: itemSize * 0.75, height: itemSize * 0.75)
+                .anyView
+        } else {
+            return EmptyView().anyView
         }
     }
 

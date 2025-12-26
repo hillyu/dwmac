@@ -55,9 +55,9 @@ Dwmac is a rebranding of AeroSpace. If you are migrating, please note the follow
 
 ## 📚 Documentation
 
-- [Guide](./docs/guide.adoc)
-- [Commands](./docs/commands.adoc)
-- [Configuration Examples](./docs/config-examples/)
+- [Guide](https://hillyu.github.io/dwmac/guide)
+- [Commands](https://hillyu.github.io/dwmac/commands)
+- [Configuration Examples](https://github.com/hillyu/dwmac/tree/main/docs/config-examples)
 
 ## 🤝 Contributing
 

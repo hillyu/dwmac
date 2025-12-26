@@ -1,53 +1,39 @@
 import AppKit
 import Common
-import Foundation
 import HotKey
 import TOMLKit
+@preconcurrency import CoreGraphics
 
-@MainActor private var hotkeys: [String: HotKey] = [:]
+@MainActor private var activeBindings: [UInt32: [HotkeyBinding]] = [:]
+@MainActor private var repeatingTasks: [UInt32: Task<Void, Never>] = [:]
 
 @MainActor func resetHotKeys() {
-    // Explicitly unregister all hotkeys. We cannot always rely on destruction of the HotKey object to trigger
-    // unregistration because we might be running inside a hotkey handler that is keeping its HotKey object alive.
-    for (_, key) in hotkeys {
-        key.isEnabled = false
+    activeBindings = [:]
+    for task in repeatingTasks.values {
+        task.cancel()
     }
-    hotkeys = [:]
-}
-
-extension HotKey {
-    var isEnabled: Bool {
-        get { !isPaused }
-        set {
-            if isEnabled != newValue {
-                isPaused = !newValue
-            }
-        }
-    }
+    repeatingTasks = [:]
 }
 
 @MainActor var activeMode: String? = mainModeId
 @MainActor func activateMode(_ targetMode: String?) async throws {
-    let targetBindings = targetMode.flatMap { config.modes[$0] }?.bindings ?? [:]
-    for binding in targetBindings.values where !hotkeys.keys.contains(binding.descriptionWithKeyCode) {
-        hotkeys[binding.descriptionWithKeyCode] = HotKey(key: binding.keyCode, modifiers: binding.modifiers, keyDownHandler: {
-            Task {
-                if let activeMode {
-                    try await runLightSession(.hotkeyBinding, .checkServerIsEnabledOrDie) { () throws in
-                        _ = try await config.modes[activeMode]?.bindings[binding.descriptionWithKeyCode]?.commands
-                            .runCmdSeq(.defaultEnv, .emptyStdin)
-                    }
-                }
+    if let bindings = targetMode.flatMap({ config.modes[$0] })?.bindings.values {
+        activeBindings = Dictionary(grouping: bindings, by: { $0.keyCode.carbonKeyCode })
+            .mapValues { bindings in
+                bindings.sorted { $0.modifiers.rawValue.nonzeroBitCount > $1.modifiers.rawValue.nonzeroBitCount }
             }
-        })
+    } else {
+        activeBindings = [:]
     }
-    for (binding, key) in hotkeys {
-        if targetBindings.keys.contains(binding) {
-            key.isEnabled = true
-        } else {
-            key.isEnabled = false
+
+    // Cleanup repeating tasks for bindings that are no longer active
+    for (keyCode, task) in repeatingTasks {
+        if activeBindings[keyCode] == nil {
+            task.cancel()
+            repeatingTasks[keyCode] = nil
         }
     }
+
     let oldMode = activeMode
     activeMode = targetMode
     if oldMode != targetMode && !config.onModeChanged.isEmpty {
@@ -83,7 +69,7 @@ struct HotkeyBinding: Equatable, Sendable {
     }
 }
 
-func parseBindings(_ raw: TOMLValueConvertible, _ backtrace: TomlBacktrace, _ errors: inout [TomlParseError], _ mapping: [String: Key]) -> [String: HotkeyBinding] {
+func parseBindings(_ raw: TOMLValueConvertible, _ backtrace: TomlBacktrace, _ errors: inout [TomlParseError], _ mapping: [String: Key], _ mod: String) -> [String: HotkeyBinding] {
     guard let rawTable = raw.table else {
         errors += [expectedActualTypeError(expected: .table, actual: raw.type, backtrace)]
         return [:]
@@ -91,7 +77,7 @@ func parseBindings(_ raw: TOMLValueConvertible, _ backtrace: TomlBacktrace, _ er
     var result: [String: HotkeyBinding] = [:]
     for (binding, rawCommand): (String, TOMLValueConvertible) in rawTable {
         let backtrace = backtrace + .key(binding)
-        let binding = parseBinding(binding, backtrace, mapping)
+        let binding = parseBinding(binding, backtrace, mapping, mod)
             .flatMap { modifiers, key -> ParsedToml<HotkeyBinding> in
                 parseCommandOrCommands(rawCommand).toParsedToml(backtrace).map {
                     HotkeyBinding(modifiers, key, $0, descriptionWithKeyNotation: binding)
@@ -108,18 +94,69 @@ func parseBindings(_ raw: TOMLValueConvertible, _ backtrace: TomlBacktrace, _ er
     return result
 }
 
-func parseBinding(_ raw: String, _ backtrace: TomlBacktrace, _ mapping: [String: Key]) -> ParsedToml<(NSEvent.ModifierFlags, Key)> {
-    let rawKeys = raw.split(separator: "-")
+func parseBinding(_ raw: String, _ backtrace: TomlBacktrace, _ mapping: [String: Key], _ mod: String) -> ParsedToml<(NSEvent.ModifierFlags, Key)> {
+    let effectiveRaw = mod.isEmpty ? raw : raw.replacingOccurrences(of: "mod-", with: mod + "-")
+    let rawKeys = effectiveRaw.split(separator: "-")
     let modifiers: ParsedToml<NSEvent.ModifierFlags> = rawKeys.dropLast()
         .mapAllOrFailure {
-            modifiersMap[String($0)].orFailure(.semantic(backtrace, "Can't parse modifiers in '\(raw)' binding"))
+            modifiersMap[String($0)].orFailure(.semantic(backtrace, "Can't parse modifiers in '\(effectiveRaw)' binding"))
         }
         .map { NSEvent.ModifierFlags($0) }
     let key: ParsedToml<Key> = rawKeys.last.flatMap { mapping[String($0)] }
-        .orFailure(.semantic(backtrace, "Can't parse the key in '\(raw)' binding"))
+        .orFailure(.semantic(backtrace, "Can't parse the key in '\(effectiveRaw)' binding"))
     return modifiers.flatMap { modifiers -> ParsedToml<(NSEvent.ModifierFlags, Key)> in
         key.flatMap { key -> ParsedToml<(NSEvent.ModifierFlags, Key)> in
             .success((modifiers, key))
         }
     }
+}
+
+// MARK: - CGEventTap Handling
+
+@MainActor
+func handleEventOnMainThread(type: CGEventType, keyCode: Int, modifiers: NSEvent.ModifierFlags, isRepeat: Bool) -> Bool {
+    guard let bindings = activeBindings[UInt32(keyCode)] else { return false }
+    let match = bindings.first { binding in
+        modifiers.contains(binding.modifiers)
+    }
+
+    if type == .keyDown {
+        if let binding = match {
+            let description = binding.descriptionWithKeyCode
+
+            if isRepeat {
+                // If it's a repeat, we swallow it if we are handling it manually.
+                return true
+            }
+
+            repeatingTasks[UInt32(keyCode)]?.cancel()
+            repeatingTasks[UInt32(keyCode)] = Task {
+                if let activeMode {
+                    try? await runLightSession(.hotkeyBinding, .checkServerIsEnabledOrDie) { () throws in
+                        _ = try await config.modes[activeMode]?.bindings[description]?.commands
+                            .runCmdSeq(.defaultEnv, .emptyStdin)
+                    }
+                    try? await Task.sleep(nanoseconds: 300_000_000) // Initial delay
+                    if Task.isCancelled { return }
+
+                    while !Task.isCancelled {
+                        try? await runLightSession(.hotkeyBinding, .checkServerIsEnabledOrDie) { () throws in
+                            _ = try await config.modes[activeMode]?.bindings[description]?.commands
+                                .runCmdSeq(.defaultEnv, .emptyStdin)
+                        }
+                        try? await Task.sleep(nanoseconds: 100_000_000) // Repeat interval
+                    }
+                }
+            }
+            return true // Swallow event
+        }
+    } else if type == .keyUp {
+        let task = repeatingTasks.removeValue(forKey: UInt32(keyCode))
+        task?.cancel()
+        if task != nil || match != nil {
+            return true // Swallow event
+        }
+    }
+
+    return false
 }

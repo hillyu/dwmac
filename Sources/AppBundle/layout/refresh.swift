@@ -97,8 +97,8 @@ struct RunSessionGuard: Sendable {
 func refreshModel() {
     Workspace.garbageCollectUnusedWorkspaces()
     checkOnFocusChangedCallbacks()
-    normalizeContainers()
 }
+
 
 @MainActor
 private func refresh() async throws {
@@ -179,13 +179,5 @@ private func layoutWorkspaces() async throws {
         for window in workspace.allLeafWindowsRecursive {
             try await (window as! MacWindow).hideInCorner(corner) // todo as!
         }
-    }
-}
-
-@MainActor
-private func normalizeContainers() {
-    // Can't do it only for visible workspace because most of the commands support --window-id and --workspace flags
-    for workspace in Workspace.all {
-        workspace.normalizeContainers()
     }
 }

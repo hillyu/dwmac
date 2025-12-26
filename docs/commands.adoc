@@ -50,6 +50,13 @@ include::./dwmac-focus-back-and-forth.adoc[tags=synopsis]
 include::./dwmac-focus-back-and-forth.adoc[tags=purpose]
 include::./dwmac-focus-back-and-forth.adoc[tags=body]
 
+== focus-master-or-back
+----
+include::dwmac-focus-master-or-back.adoc[tags=synopsis]
+----
+include::dwmac-focus-master-or-back.adoc[tags=purpose]
+include::dwmac-focus-master-or-back.adoc[tags=body]
+
 == focus-monitor
 ----
 include::dwmac-focus-monitor.adoc[tags=synopsis]
@@ -86,6 +93,13 @@ include::dwmac-macos-native-minimize.adoc[tags=synopsis]
 include::dwmac-macos-native-minimize.adoc[tags=purpose]
 include::dwmac-macos-native-minimize.adoc[tags=body]
 
+== mfact
+----
+include::dwmac-mfact.adoc[tags=synopsis]
+----
+include::dwmac-mfact.adoc[tags=purpose]
+include::dwmac-mfact.adoc[tags=body]
+
 == mode
 ----
 include::dwmac-mode.adoc[tags=synopsis]
@@ -107,6 +121,13 @@ include::./dwmac-move-mouse.adoc[tags=synopsis]
 ----
 include::./dwmac-move-mouse.adoc[tags=purpose]
 include::./dwmac-move-mouse.adoc[tags=body]
+
+== move-node-to-master
+----
+include::dwmac-move-node-to-master.adoc[tags=synopsis]
+----
+include::dwmac-move-node-to-master.adoc[tags=purpose]
+include::dwmac-move-node-to-master.adoc[tags=body]
 
 == move-node-to-monitor
 ----
@@ -142,13 +163,6 @@ include::dwmac-resize.adoc[tags=synopsis]
 ----
 include::dwmac-resize.adoc[tags=purpose]
 include::dwmac-resize.adoc[tags=body]
-
-== split
-----
-include::dwmac-split.adoc[tags=synopsis]
-----
-include::dwmac-split.adoc[tags=purpose]
-include::dwmac-split.adoc[tags=body]
 
 == swap
 ----

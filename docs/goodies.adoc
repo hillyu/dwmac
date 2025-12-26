@@ -49,13 +49,6 @@ after-startup-command = [
 ]
 ----
 
-[#raycast-extension]
-== Dwmac Raycast extension
-
-There is a third party Raycast extension for Dwmac. https://www.raycast.com/limonkufu/dwmac
-
-If you struggle remembering shortcuts, it's useful to search for commands until they become muscle memory.
-
 [#disable-open-animations]
 == Disable windows opening animations
 
@@ -65,29 +58,6 @@ Observable in Google Chrome
 ----
 defaults write -g NSAutomaticWindowAnimationsEnabled -bool false
 ----
-
-[#use-trackpad-gestures-to-switch-workspaces]
-== Use trackpad gestures to switch workspaces
-
-The following commands focus next or previous workspaces on monitors where the mouse is located
-
-[source,bash]
-----
-dwmac workspace "$(dwmac list-workspaces --monitor mouse --visible)" && dwmac workspace next
-
-dwmac workspace "$(dwmac list-workspaces --monitor mouse --visible)" && dwmac workspace prev
-----
-
-Use the software of your choice to assign trackpad gestures to the respective commands.
-Here are a few third party options in alphabetical order:
-
-* https://github.com/acsandmann/dwmac-swipe
-* link:https://folivora.ai/[BetterTouchTool] can assign arbitrary commands to trackpad gestures.
-Beware that you might need to specify full path to dwmac executable https://community.folivora.ai/t/how-to-execute-terminal-command-to-switch-workspaces-with-dwmac/35914
-* https://github.com/MediosZ/SwipeDwmac
-
-CAUTION: Make sure that you trust project authors before running the distributed binaries.
-Alternatively, inspect the source code, and build it yourself.
 
 [#show-dwmac-workspaces-in-sketchybar]
 == Show Dwmac workspaces in Sketchybar
@@ -220,16 +190,6 @@ You can configure a custom shortcut to take a screenshot.
 [source,toml]
 ----
 alt-shift-s = 'exec-and-forget screencapture -i -c'
-----
-
-[#i3-like-config]
-== i3 like config
-
-link:config-examples/i3-like-config-example.toml[Download i3-like-config.toml]
-
-[source,toml,subs="macros+,specialchars+"]
-----
-include::config-examples/i3-like-config-example.toml[]
 ----
 
 [#popular-apps-ids]

@@ -1,0 +1,73 @@
+name: Release & Update Tap
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release:
+    name: Build, Release, and Update Tap
+    runs-on: macos-15
+    permissions: 
+      contents: write # Required for softprops/action-gh-release
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: xcode-select
+        run: ./.github/gh-actions-runner-xcode-select.sh
+
+      - name: Install Dependencies
+        run: |
+          brew install bash fish xcbeautify swiftly
+          swiftly init --skip-install --assume-yes --verbose && swiftly install
+
+      - name: Build Release Artifacts
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          # Build and sign locally (ad-hoc)
+          ./build-release.sh --codesign-identity - --build-version "$VERSION"
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: .release/Dwmac-v*.zip
+          generate_release_notes: true
+          draft: false
+
+      - name: Generate Public Cask
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          # Construct the public URL for the file we just released
+          REPO_URL="https://github.com/${{ github.repository }}"
+          ZIP_URL="$REPO_URL/releases/download/v$VERSION/Dwmac-v$VERSION.zip"
+          
+          # Regenerate the Cask file using the public URL
+          ./script/build-brew-cask.sh \
+            --cask-name dwmac \
+            --build-version "$VERSION" \
+            --zip-uri "$ZIP_URL"
+
+      - name: Update Tap Repository
+        env:
+          TAP_REPO: "hillyu/homebrew-tap"
+          TAP_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
+        run: |
+          # Configure Git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Clone the Tap Repo
+          git clone "https://$TAP_TOKEN@github.com/$TAP_REPO.git" tap-repo
+          
+          # Copy the generated Cask to the Tap
+          mkdir -p tap-repo/Casks
+          cp .release/dwmac.rb tap-repo/Casks/dwmac.rb
+          
+          # Commit and Push
+          cd tap-repo
+          git add Casks/dwmac.rb
+          git commit -m "Update dwmac to ${{ github.ref_name }}"
+          git push origin main

@@ -28,6 +28,7 @@ public final class TrayMenuModel: ObservableObject {
         .joined(separator: " │ ")
     TrayMenuModel.shared.workspaces = Workspace.all.map {
         let apps = $0.allLeafWindowsRecursive.map { $0.app.name?.takeIf { !$0.isEmpty } }.filterNotNil().toSet()
+        let appBundleIds = $0.allLeafWindowsRecursive.map { $0.app.rawAppBundleId }.filterNotNil().toSet()
         let dash = " - "
         let suffix = switch true {
             case !apps.isEmpty: dash + apps.sorted().joinTruncating(separator: ", ", length: 25)
@@ -42,6 +43,7 @@ public final class TrayMenuModel: ObservableObject {
             isEffectivelyEmpty: $0.isEffectivelyEmpty,
             isVisible: $0.isVisible,
             hasFullscreenWindows: hasFullscreenWindows,
+            appBundleIds: Array(appBundleIds).sorted(),
         )
     }
     var items = sortedMonitors.map {
@@ -69,6 +71,7 @@ struct WorkspaceViewModel: Hashable {
     let isEffectivelyEmpty: Bool
     let isVisible: Bool
     let hasFullscreenWindows: Bool
+    let appBundleIds: [String]
 }
 
 enum TrayItemType: String, Hashable {

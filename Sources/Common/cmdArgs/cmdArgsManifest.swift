@@ -11,6 +11,7 @@ public enum CmdKind: String, CaseIterable, Equatable, Sendable {
 
     case focus
     case focusBackAndForth = "focus-back-and-forth"
+    case focusMasterOrBack = "focus-master-or-back"
     case focusMonitor = "focus-monitor"
     case fullscreen
 
@@ -33,7 +34,7 @@ public enum CmdKind: String, CaseIterable, Equatable, Sendable {
     case moveWorkspaceToMonitor = "move-workspace-to-monitor"
     case reloadConfig = "reload-config"
     case resize
-    case split
+    // case split
     case summonWorkspace = "summon-workspace"
     case swap
     case triggerBinding = "trigger-binding"
@@ -64,6 +65,8 @@ func initSubcommands() -> [String: any SubCommandParserProtocol] {
                 result[kind.rawValue] = SubCommandParser(parseFocusCmdArgs)
             case .focusBackAndForth:
                 result[kind.rawValue] = SubCommandParser(FocusBackAndForthCmdArgs.init)
+            case .focusMasterOrBack:
+                result[kind.rawValue] = SubCommandParser(FocusMasterOrBackCmdArgs.init)
             case .focusMonitor:
                 result[kind.rawValue] = SubCommandParser(parseFocusMonitorCmdArgs)
             case .fullscreen:
@@ -111,8 +114,8 @@ func initSubcommands() -> [String: any SubCommandParserProtocol] {
                 result[kind.rawValue] = SubCommandParser(ReloadConfigCmdArgs.init)
             case .resize:
                 result[kind.rawValue] = SubCommandParser(parseResizeCmdArgs)
-            case .split:
-                result[kind.rawValue] = SubCommandParser(parseSplitCmdArgs)
+            // case .split:
+            //    result[kind.rawValue] = SubCommandParser(parseSplitCmdArgs)
             case .summonWorkspace:
                 result[kind.rawValue] = SubCommandParser(SummonWorkspaceCmdArgs.init)
             case .swap:

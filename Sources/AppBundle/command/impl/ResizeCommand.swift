@@ -1,53 +1,55 @@
 import AppKit
 import Common
 
-struct ResizeCommand: Command { // todo cover with tests
+struct ResizeCommand: Command {
     let args: ResizeCmdArgs
     /*conforms*/ var shouldResetClosedWindowsCache = true
 
-    func run(_ env: CmdEnv, _ io: CmdIo) -> Bool {
+    func run(_ env: CmdEnv, _ io: CmdIo) async throws -> Bool {
         guard let target = args.resolveTargetOrReportError(env, io) else { return false }
+        guard let window = target.windowOrNil else { return false }
 
-        let candidates = target.windowOrNil?.parentsWithSelf
-            .filter { ($0.parent as? TilingContainer)?.layout == .masterStack }
-            ?? []
-
-        let orientation: Orientation?
-        let parent: TilingContainer?
-        let node: TreeNode?
-        switch args.dimension.val {
-            case .width:
-                orientation = .h
-                node = candidates.first(where: { ($0.parent as? TilingContainer)?.orientation == orientation })
-                parent = node?.parent as? TilingContainer
-            case .height:
-                orientation = .v
-                node = candidates.first(where: { ($0.parent as? TilingContainer)?.orientation == orientation })
-                parent = node?.parent as? TilingContainer
-            case .smart:
-                node = candidates.first
-                parent = node?.parent as? TilingContainer
-                orientation = parent?.orientation
-            case .smartOpposite:
-                orientation = (candidates.first?.parent as? TilingContainer)?.orientation.opposite
-                node = candidates.first(where: { ($0.parent as? TilingContainer)?.orientation == orientation })
-                parent = node?.parent as? TilingContainer
+        if !window.isFloating {
+            return io.err("resize command only supports floating windows")
         }
-        guard let parent else { return io.err("resize command doesn't support floating windows yet https://github.com/hillyu/Dwmac/issues/9") }
-        guard let orientation else { return false }
-        guard let node else { return false }
+
+        guard let rect = try? await window.getAxRect() else { return false }
+        var newSize = rect.size
+
         let diff: CGFloat = switch args.units.val {
-            case .set(let unit): CGFloat(unit) - node.getWeight(orientation)
+            case .set(let unit): CGFloat(unit)
             case .add(let unit): CGFloat(unit)
             case .subtract(let unit): -CGFloat(unit)
         }
 
-        guard let childDiff = diff.div(parent.children.count - 1) else { return false }
-        parent.children.lazy
-            .filter { $0 != node }
-            .forEach { $0.setWeight(parent.orientation, $0.getWeight(parent.orientation) - childDiff) }
+        // Helper to apply change
+        func apply(_ current: CGFloat) -> CGFloat {
+            if case .set = args.units.val {
+                return diff
+            } else {
+                return current + diff
+            }
+        }
 
-        node.setWeight(orientation, node.getWeight(orientation) + diff)
+        switch args.dimension.val {
+            case .width:
+                newSize.width = apply(newSize.width)
+            case .height:
+                newSize.height = apply(newSize.height)
+            case .smart:
+                // Default to width for smart on floating
+                newSize.width = apply(newSize.width)
+            case .smartOpposite:
+                // Default to height for smart-opposite on floating
+                newSize.height = apply(newSize.height)
+        }
+
+        // Prevent collapsing to zero/negative
+        newSize.width = max(10, newSize.width)
+        newSize.height = max(10, newSize.height)
+
+        window.setAxFrame(rect.topLeftCorner, newSize)
+
         return true
     }
 }

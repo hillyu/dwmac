@@ -1,0 +1,40 @@
+= dwmac-focus-master-or-back(1)
+include::util/man-attributes.adoc[]
+// tag::purpose[]
+:manpurpose: Toggle focus between the master window and the previously focused non-master window
+// end::purpose[]
+:manname: dwmac-focus-master-or-back
+
+// =========================================================== Synopsis
+== Synopsis
+[verse]
+// tag::synopsis[]
+dwmac focus-master-or-back [-h|--help]
+
+// end::synopsis[]
+
+// =========================================================== Description
+== Description
+
+// tag::body[]
+{manpurpose}.
+
+The "master" window is defined as the first non-floating window in the current workspace.
+The command toggles focus between this master window and the last window that was focused
+and was *not* the master window.
+
+Logic:
+. If the currently focused window is the master window, focus is moved to the previously focused non-master window.
+. If the currently focused window is *not* the master window, focus is moved to the master window.
+. If there is no master window (e.g., all windows are floating or workspace is empty), nothing happens.
+. If there is no recorded "previous non-master window", nothing happens.
+
+// end::body[]
+
+// =========================================================== Options
+include::util/conditional-options-header.adoc[]
+
+-h, --help:: Print help
+
+// =========================================================== Footer
+include::util/man-footer.adoc[]

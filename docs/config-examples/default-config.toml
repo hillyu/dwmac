@@ -12,12 +12,15 @@ after-startup-command = []
 # Start Dwmac at login
 start-at-login = false
 
-# Normalizations. See: https://hillyu.github.io/Dwmac/guide#normalization
-enable-normalization-flatten-containers = true
-enable-normalization-opposite-orientation-for-nested-containers = true
-
 # Possible values: master-stack
 default-root-container-layout = 'master-stack'
+
+# mfact for master-stack
+default-mfact = 0.5
+
+# Whether new windows should be attached to the master position (index 0) or the last position.
+# Fallback value (if you omit the key): attach-below = false
+attach-below = false
 
 # Possible values: horizontal|vertical|auto
 # 'auto' means: wide monitor (anything wider than high) gets horizontal orientation,
@@ -104,97 +107,52 @@ on-mode-changed = []
     # '''
 
     # See: https://hillyu.github.io/Dwmac/commands#layout
-    alt-slash = 'layout master-stack'
+    cmd-alt-ctrl-slash = 'layout master-stack'
 
     # See: https://hillyu.github.io/Dwmac/commands#focus
-    alt-h = 'focus left'
-    alt-j = 'focus down'
-    alt-k = 'focus up'
-    alt-l = 'focus right'
+    cmd-alt-ctrl-j = 'focus dfs-next'
+    cmd-alt-ctrl-k = 'focus dfs-prev'
+    cmd-alt-ctrl-h = 'mfact -0.1'
+    cmd-alt-ctrl-l = 'mfact +0.1'
 
     # See: https://hillyu.github.io/Dwmac/commands#move
-    alt-shift-h = 'move left'
-    alt-shift-j = 'move down'
-    alt-shift-k = 'move up'
-    alt-shift-l = 'move right'
+    cmd-alt-ctrl-space = 'move-node-to-master'
+    cmd-alt-ctrl-shift-j = 'swap dfs-next'
+    cmd-alt-ctrl-shift-k = 'swap dfs-prev'
 
     # See: https://hillyu.github.io/Dwmac/commands#resize
-    alt-minus = 'resize smart -50'
-    alt-equal = 'resize smart +50'
+    cmd-alt-ctrl-minus = 'resize smart -50'
+    cmd-alt-ctrl-equal = 'resize smart +50'
 
     # See: https://hillyu.github.io/Dwmac/commands#workspace
-    alt-1 = 'workspace 1'
-    alt-2 = 'workspace 2'
-    alt-3 = 'workspace 3'
-    alt-4 = 'workspace 4'
-    alt-5 = 'workspace 5'
-    alt-6 = 'workspace 6'
-    alt-7 = 'workspace 7'
-    alt-8 = 'workspace 8'
-    alt-9 = 'workspace 9'
-    alt-a = 'workspace A' # In your config, you can drop workspace bindings that you don't need
-    alt-b = 'workspace B'
-    alt-c = 'workspace C'
-    alt-d = 'workspace D'
-    alt-e = 'workspace E'
-    alt-f = 'workspace F'
-    alt-g = 'workspace G'
-    alt-i = 'workspace I'
-    alt-m = 'workspace M'
-    alt-n = 'workspace N'
-    alt-o = 'workspace O'
-    alt-p = 'workspace P'
-    alt-q = 'workspace Q'
-    alt-r = 'workspace R'
-    alt-s = 'workspace S'
-    alt-t = 'workspace T'
-    alt-u = 'workspace U'
-    alt-v = 'workspace V'
-    alt-w = 'workspace W'
-    alt-x = 'workspace X'
-    alt-y = 'workspace Y'
-    alt-z = 'workspace Z'
+    cmd-alt-ctrl-1 = 'workspace 1'
+    cmd-alt-ctrl-2 = 'workspace 2'
+    cmd-alt-ctrl-3 = 'workspace 3'
+    cmd-alt-ctrl-4 = 'workspace 4'
+    cmd-alt-ctrl-5 = 'workspace 5'
+    cmd-alt-ctrl-6 = 'workspace 6'
+    cmd-alt-ctrl-7 = 'workspace 7'
+    cmd-alt-ctrl-8 = 'workspace 8'
+    cmd-alt-ctrl-9 = 'workspace 9'
 
     # See: https://hillyu.github.io/Dwmac/commands#move-node-to-workspace
-    alt-shift-1 = 'move-node-to-workspace 1'
-    alt-shift-2 = 'move-node-to-workspace 2'
-    alt-shift-3 = 'move-node-to-workspace 3'
-    alt-shift-4 = 'move-node-to-workspace 4'
-    alt-shift-5 = 'move-node-to-workspace 5'
-    alt-shift-6 = 'move-node-to-workspace 6'
-    alt-shift-7 = 'move-node-to-workspace 7'
-    alt-shift-8 = 'move-node-to-workspace 8'
-    alt-shift-9 = 'move-node-to-workspace 9'
-    alt-shift-a = 'move-node-to-workspace A'
-    alt-shift-b = 'move-node-to-workspace B'
-    alt-shift-c = 'move-node-to-workspace C'
-    alt-shift-d = 'move-node-to-workspace D'
-    alt-shift-e = 'move-node-to-workspace E'
-    alt-shift-f = 'move-node-to-workspace F'
-    alt-shift-g = 'move-node-to-workspace G'
-    alt-shift-i = 'move-node-to-workspace I'
-    alt-shift-m = 'move-node-to-workspace M'
-    alt-shift-n = 'move-node-to-workspace N'
-    alt-shift-o = 'move-node-to-workspace O'
-    alt-shift-p = 'move-node-to-workspace P'
-    alt-shift-q = 'move-node-to-workspace Q'
-    alt-shift-r = 'move-node-to-workspace R'
-    alt-shift-s = 'move-node-to-workspace S'
-    alt-shift-t = 'move-node-to-workspace T'
-    alt-shift-u = 'move-node-to-workspace U'
-    alt-shift-v = 'move-node-to-workspace V'
-    alt-shift-w = 'move-node-to-workspace W'
-    alt-shift-x = 'move-node-to-workspace X'
-    alt-shift-y = 'move-node-to-workspace Y'
-    alt-shift-z = 'move-node-to-workspace Z'
+    cmd-alt-ctrl-shift-1 = 'move-node-to-workspace 1'
+    cmd-alt-ctrl-shift-2 = 'move-node-to-workspace 2'
+    cmd-alt-ctrl-shift-3 = 'move-node-to-workspace 3'
+    cmd-alt-ctrl-shift-4 = 'move-node-to-workspace 4'
+    cmd-alt-ctrl-shift-5 = 'move-node-to-workspace 5'
+    cmd-alt-ctrl-shift-6 = 'move-node-to-workspace 6'
+    cmd-alt-ctrl-shift-7 = 'move-node-to-workspace 7'
+    cmd-alt-ctrl-shift-8 = 'move-node-to-workspace 8'
+    cmd-alt-ctrl-shift-9 = 'move-node-to-workspace 9'
 
     # See: https://hillyu.github.io/Dwmac/commands#workspace-back-and-forth
-    alt-tab = 'workspace-back-and-forth'
+    cmd-alt-ctrl-tab = 'workspace-back-and-forth'
     # See: https://hillyu.github.io/Dwmac/commands#move-workspace-to-monitor
-    alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+    cmd-alt-ctrl-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
     # See: https://hillyu.github.io/Dwmac/commands#mode
-    alt-shift-semicolon = 'mode service'
+    cmd-alt-ctrl-shift-semicolon = 'mode service'
 
 # 'service' binding mode declaration.
 # See: https://hillyu.github.io/Dwmac/guide#binding-modes

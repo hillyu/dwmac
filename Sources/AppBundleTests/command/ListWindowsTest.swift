@@ -29,7 +29,7 @@ final class ListWindowsTest: XCTestCase {
         // --json
         assertEquals(parseCommand("list-windows --all --count --json").errorOrNil, "ERROR: Conflicting options: --count, --json")
         assertEquals(parseCommand("list-windows --all --format '%{right-padding}' --json").errorOrNil, "%{right-padding} interpolation variable is not allowed when --json is used")
-        assertEquals(parseCommand("list-windows --all --format '%{window-title} |' --json").errorOrNil, "Only interpolation variables and spaces are allowed in \'--format\' when \'--json\' is used")
+        assertEquals(parseCommand("list-windows --all --format '%{window-title} |' --json").errorOrNil, "Only interpolation variables and spaces are allowed in '--format' when '--json' is used")
         assertNil(parseCommand("list-windows --all --format '%{window-title}' --json").errorOrNil)
     }
 
@@ -49,7 +49,7 @@ final class ListWindowsTest: XCTestCase {
     }
 
     func testFormat() {
-        Workspace.get(byName: name).rootTilingContainer.apply {
+        Workspace.get(byName: name).apply {
             let windows = [
                 AeroObj.window(window: TestWindow.new(id: 2, parent: $0), title: "non-empty"),
                 AeroObj.window(window: TestWindow.new(id: 1, parent: $0), title: ""),
@@ -57,7 +57,7 @@ final class ListWindowsTest: XCTestCase {
             assertEquals(windows.format([.interVar("window-title")]), .success(["non-empty", ""]))
         }
 
-        Workspace.get(byName: name).rootTilingContainer.apply {
+        Workspace.get(byName: name).apply {
             let windows = [
                 AeroObj.window(window: TestWindow.new(id: 2, parent: $0), title: "non-empty"),
                 AeroObj.window(window: TestWindow.new(id: 10, parent: $0), title: ""),
@@ -65,7 +65,7 @@ final class ListWindowsTest: XCTestCase {
             assertEquals(windows.format([.interVar("window-id"), .interVar("right-padding"), .interVar("window-title")]), .success(["2 non-empty", "10"]))
         }
 
-        Workspace.get(byName: name).rootTilingContainer.apply {
+        Workspace.get(byName: name).apply {
             let windows = [
                 AeroObj.window(window: TestWindow.new(id: 2, parent: $0), title: "title1"),
                 AeroObj.window(window: TestWindow.new(id: 10, parent: $0), title: "title2"),

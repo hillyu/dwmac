@@ -36,7 +36,7 @@ func moveWindowToWorkspace(_ window: Window, _ targetWorkspace: Workspace, _ io:
         }
         return !failIfNoop
     }
-    let targetContainer: NonLeafTreeNodeObject = window.isFloating ? targetWorkspace : targetWorkspace.rootTilingContainer
-    window.bind(to: targetContainer, adaptiveWeight: WEIGHT_AUTO, index: index)
+    // Both floating and tiling windows are bound to the workspace directly now.
+    window.bind(to: targetWorkspace, index: index)
     return focusFollowsWindow ? window.focusWindow() : true
 }

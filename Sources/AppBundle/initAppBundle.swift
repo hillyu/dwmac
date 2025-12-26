@@ -26,6 +26,7 @@ import Foundation
         }
 
         checkAccessibilityPermissions()
+        initEventTap()
         startUnixSocketServer()
         GlobalObserver.initObserver()
         Workspace.garbageCollectUnusedWorkspaces() // init workspaces

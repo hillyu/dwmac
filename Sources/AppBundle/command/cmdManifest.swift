@@ -22,6 +22,8 @@ extension CmdArgs {
                 command = FocusCommand(args: self as! FocusCmdArgs)
             case .focusBackAndForth:
                 command = FocusBackAndForthCommand(args: self as! FocusBackAndForthCmdArgs)
+            case .focusMasterOrBack:
+                command = FocusMasterOrBackCommand(args: self as! FocusMasterOrBackCmdArgs)
             case .focusMonitor:
                 command = FocusMonitorCommand(args: self as! FocusMonitorCmdArgs)
             case .fullscreen:
@@ -65,8 +67,8 @@ extension CmdArgs {
                 command = ReloadConfigCommand(args: self as! ReloadConfigCmdArgs)
             case .resize:
                 command = ResizeCommand(args: self as! ResizeCmdArgs)
-            case .split:
-                command = SplitCommand(args: self as! SplitCmdArgs)
+            // case .split:
+            //    command = SplitCommand(args: self as! SplitCmdArgs)
             case .summonWorkspace:
                 command = SummonWorkspaceCommand(args: self as! SummonWorkspaceCmdArgs)
             case .swap:

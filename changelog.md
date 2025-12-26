@@ -2,6 +2,19 @@
 
 **Features & Enhancements:**
 
+*   **"i3 style ordered with icons" Menu Bar Style:**
+    *   Added a new menu bar style that displays workspace squares followed by icons of the applications running in that workspace.
+    *   Icons are fetched dynamically using `NSWorkspace` and scaled for clarity on Retina displays.
+    *   Configurable via Experimental UI Settings.
+
+*   **Smart Floating Windows:**
+    *   Fixed a bug where heuristic-detected floating windows (e.g., System Settings, Safari Preferences) were incorrectly initialized as tiling. This ensures that windows without a fullscreen button float automatically as intended.
+
+*   **Refactor: "Tree" to "Node/Model":**
+    *   Renamed "tree" related concepts to `Node`, `DwNode`, and `Model` to better reflect the non-strict tree architecture.
+    *   Moved `Sources/AppBundle/tree` to `Sources/AppBundle/dwmodel`.
+    *   Updated all internal references from `TreeNode`, `NilTreeNode`, etc., to their new counterparts.
+
 *   **Master-Stack Layout Support:**
     *   Implemented the `master-stack` tiling layout (`h_master_stack` and `v_master_stack`).
     *   Added `move-node-to-master` command to move the focused window to the master area.

@@ -10,7 +10,6 @@ struct LayoutCommand: Command {
         guard let window = target.windowOrNil else {
             return io.err(noWindowIsFocused)
         }
-        guard let parent = window.parent else { return false }
         let targetDescription = args.toggleBetween.val.first(where: { !window.matchesDescription($0) })
             ?? args.toggleBetween.val.first.orDie()
         if window.matchesDescription(targetDescription) { return false }
@@ -26,55 +25,45 @@ struct LayoutCommand: Command {
             case .vertical:
                 return changeTilingLayout(io, targetLayout: nil, targetOrientation: .v, window: window)
             case .tiling:
-                switch parent.cases {
-                    case .tilingContainer: return false
-                    case .workspace(let workspace):
-                        window.bind(to: workspace.rootTilingContainer, adaptiveWeight: WEIGHT_AUTO, index: INDEX_BIND_LAST)
-                        return true
-                    case .macosMinimizedWindowsContainer, .macosFullscreenWindowsContainer,
-                         .macosPopupWindowsContainer, .macosHiddenAppsWindowsContainer:
-                        return io.err("The window is non-tiling")
+                if window.isFloating {
+                    window.isFloating = false
+                    // Rebind to force update? Or just changing property is enough if we trigger layout?
+                    // Window needs to be in workspace children.
+                    return true
                 }
+                return false
             case .floating:
-                switch parent.cases {
-                    case .tilingContainer:
-                        guard let workspace = window.nodeWorkspace else { return false }
-                        window.bindAsFloatingWindow(to: workspace)
-                        return true
-                    case .workspace: return false
-                    case .macosMinimizedWindowsContainer, .macosFullscreenWindowsContainer,
-                         .macosPopupWindowsContainer, .macosHiddenAppsWindowsContainer:
-                        return io.err("The window is non-tiling")
+                if !window.isFloating {
+                    window.isFloating = true
+                    return true
                 }
+                return false
         }
     }
 }
 
 @MainActor private func changeTilingLayout(_ io: CmdIo, targetLayout: Layout?, targetOrientation: Orientation?, window: Window) -> Bool {
-    guard let parent = window.parent else { return false }
-    switch parent.cases {
-        case .tilingContainer(let parent):
-            let targetOrientation = targetOrientation ?? parent.orientation
-            let targetLayout = targetLayout ?? parent.layout
-            parent.layout = targetLayout
-            parent.changeOrientation(targetOrientation)
-            return true
-        case .workspace, .macosMinimizedWindowsContainer, .macosFullscreenWindowsContainer,
-             .macosPopupWindowsContainer, .macosHiddenAppsWindowsContainer:
-            return io.err("The window is non-tiling")
+    guard let workspace = window.nodeWorkspace else { return false }
+    if let targetLayout {
+        workspace.layout = targetLayout
     }
+    if let targetOrientation {
+        workspace.orientation = targetOrientation
+    }
+    return true
 }
 
 extension Window {
     fileprivate func matchesDescription(_ layout: LayoutCmdArgs.LayoutDescription) -> Bool {
+        guard let workspace = nodeWorkspace else { return false }
         return switch layout {
-            case .horizontal:  (parent as? TilingContainer)?.orientation == .h
-            case .vertical:    (parent as? TilingContainer)?.orientation == .v
-            case .tiling:      parent is TilingContainer
-            case .floating:    !(parent is TilingContainer)
-            case .master_stack: (parent as? TilingContainer)?.layout == .masterStack
-            case .h_master_stack: (parent as? TilingContainer)?.layout == .masterStack && (parent as? TilingContainer)?.orientation == .h
-            case .v_master_stack: (parent as? TilingContainer)?.layout == .masterStack && (parent as? TilingContainer)?.orientation == .v
+            case .horizontal:  !isFloating && workspace.orientation == .h
+            case .vertical:    !isFloating && workspace.orientation == .v
+            case .tiling:      !isFloating
+            case .floating:    isFloating
+            case .master_stack: !isFloating && workspace.layout == .masterStack
+            case .h_master_stack: !isFloating && workspace.layout == .masterStack && workspace.orientation == .h
+            case .v_master_stack: !isFloating && workspace.layout == .masterStack && workspace.orientation == .v
         }
     }
 }

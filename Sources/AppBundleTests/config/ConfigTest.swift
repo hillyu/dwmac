@@ -4,15 +4,6 @@ import XCTest
 
 @MainActor
 final class ConfigTest: XCTestCase {
-    func testParseI3Config() {
-        let toml = try! String(contentsOf: projectRoot.appending(component: "docs/config-examples/i3-like-config-example.toml"), encoding: .utf8)
-        let (i3Config, errors) = parseConfig(toml)
-        assertEquals(errors, [])
-        assertEquals(i3Config.execConfig, defaultConfig.execConfig)
-        assertEquals(i3Config.enableNormalizationFlattenContainers, false)
-        assertEquals(i3Config.enableNormalizationOppositeOrientationForNestedContainers, false)
-    }
-
     func testParseDefaultConfig() {
         let toml = try! String(contentsOf: projectRoot.appending(component: "docs/config-examples/default-config.toml"), encoding: .utf8)
         let (_, errors) = parseConfig(toml)
@@ -54,6 +45,34 @@ final class ConfigTest: XCTestCase {
             """,
         )
         assertEquals(errors.descriptions, ["persistent-workspaces: This config option is only available since \'config-version = 2\'"])
+    }
+
+    func testParseFineGrainedModifiers() {
+        let (config, errors) = parseConfig(
+            """
+            [mode.main.binding]
+                lcmd-a = 'focus left'
+                rcmd-a = 'focus right'
+                cmd-a = 'focus up'
+            """,
+        )
+        assertEquals(errors, [])
+        let lcmdA = HotkeyBinding([.command, .lCommand], .a, [FocusCommand.new(direction: .left)], descriptionWithKeyNotation: "lcmd-a")
+        let rcmdA = HotkeyBinding([.command, .rCommand], .a, [FocusCommand.new(direction: .right)], descriptionWithKeyNotation: "rcmd-a")
+        let cmdA = HotkeyBinding(.command, .a, [FocusCommand.new(direction: .up)], descriptionWithKeyNotation: "cmd-a")
+
+        assertEquals(
+            config.modes[mainModeId]?.bindings[lcmdA.descriptionWithKeyCode],
+            lcmdA,
+        )
+        assertEquals(
+            config.modes[mainModeId]?.bindings[rcmdA.descriptionWithKeyCode],
+            rcmdA,
+        )
+        assertEquals(
+            config.modes[mainModeId]?.bindings[cmdA.descriptionWithKeyCode],
+            cmdA,
+        )
     }
 
     func testQueryCantBeUsedInConfig() {
@@ -205,26 +224,6 @@ final class ConfigTest: XCTestCase {
             XCTFail()
             return
         }
-    }
-
-    func testSplitCommandAndFlattenContainersNormalization() {
-        let (_, errors) = parseConfig(
-            """
-            enable-normalization-flatten-containers = true
-            [mode.main.binding]
-            [mode.foo.binding]
-                alt-s = 'split horizontal'
-            """,
-        )
-        assertEquals(
-            ["""
-                The config contains:
-                1. usage of 'split' command
-                2. enable-normalization-flatten-containers = true
-                These two settings don't play nicely together. 'split' command has no effect when enable-normalization-flatten-containers is disabled.
-                """],
-            errors.descriptions,
-        )
     }
 
     func testParseWorkspaceToMonitorAssignment() {
