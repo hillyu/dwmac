@@ -275,12 +275,13 @@ The Master-Stack layout can be oriented in two ways:
 
 You can switch the orientation of the current workspace using the xref:commands.adoc#layout[layout] command.
 
-[.lead]
-*Example*
-
+.Example: Horizontal Layout
+====
 In a horizontal layout with 3 windows:
+
 * Window 1 (Master) takes the left part of the screen.
 * Window 2 and Window 3 share the right part of the screen, stacked on top of each other.
+====
 
 [#floating-windows]
 === Floating windows
