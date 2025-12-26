@@ -2,7 +2,7 @@
 
 <img src="./resources/Assets.xcassets/AppIcon.appiconset/icon.png" width="20%" align="right">
 
-**Dwmac** is a tiling window manager for macOS, forked from [AeroSpace](https://github.com/nikitabobko/AeroSpace) and rebranded for customized maintenance and features. It follows a **master-stack tiling paradigm**, offering efficient window management without disabling SIP.
+**Dwmac** is a tiling window manager for macOS. Built on top of [AeroSpace](https://github.com/nikitabobko/AeroSpace), it has evolved drastically into a different project. It offers a distinct window management style, having simplified core logic and added features tailored for a **dwm-style** experience. It follows a **master-stack tiling paradigm**, offering efficient window management without disabling SIP.
 
 ## 🚀 Key Features
 
@@ -12,6 +12,61 @@
 - **CLI-First**: Extensive command-line interface `dwmac` for scripting and control.
 - **Multi-Monitor**: strong multi-monitor support.
 - **SIP-Compatible**: Does **not** require disabling System Integrity Protection.
+
+### 🖼️ Layout Visualization
+
+#### Horizontal Master-Stack (Default)
+```mermaid
+graph TD
+    subgraph MonitorH ["🖥️ Monitor"]
+        MasterH["Master Area<br>Main Focus"] --> StackH[Stack Area]
+        subgraph StackH
+            W1H[Window 2] --> W2H[Window 3]
+        end
+    end
+    style MasterH fill:#d4a5a5,stroke:#333,stroke-width:2px,color:#000
+    style StackH fill:#a5d4d4,stroke:#333,stroke-width:2px,color:#000
+    style W1H fill:#fff,stroke:#333,color:#000
+    style W2H fill:#fff,stroke:#333,color:#000
+```
+
+#### Vertical Master-Stack
+```mermaid
+graph LR
+    subgraph MonitorV ["🖥️ Monitor"]
+        MasterV["Master Area<br>Main Focus"] --> StackV[Stack Area]
+        subgraph StackV
+            W1V[Window 2] --> W2V[Window 3]
+        end
+    end
+    style MasterV fill:#d4a5a5,stroke:#333,stroke-width:2px,color:#000
+    style StackV fill:#a5d4d4,stroke:#333,stroke-width:2px,color:#000
+    style W1V fill:#fff,stroke:#333,color:#000
+    style W2V fill:#fff,stroke:#333,color:#000
+```
+
+### 🧩 Workspace Architecture
+
+```mermaid
+graph TD
+    subgraph Monitor1 [Monitor 1]
+        WS1["Workspace 1<br>(Active)"]
+    end
+    subgraph Monitor2 [Monitor 2]
+        WS2["Workspace 2<br>(Active)"]
+    end
+    subgraph Hidden [Background]
+        WS3[Workspace 3]
+        WS4[Workspace 4]
+        WS5[Workspace 5]
+    end
+    
+    WS3 -.->|Switch| Monitor1
+    WS4 -.->|Switch| Monitor2
+    
+    style Monitor1 fill:#e1e1e1,stroke:#333,color:#000
+    style Monitor2 fill:#e1e1e1,stroke:#333,color:#000
+```
 
 ## 📦 Installation
 
@@ -41,7 +96,7 @@ Requirements: Xcode 16+
 
 ## 🔄 Changes from AeroSpace
 
-Dwmac is a rebranding of AeroSpace. If you are migrating, please note the following changes:
+Dwmac is based on AeroSpace. If you are migrating, please note the following changes:
 
 | Category | Original (AeroSpace) | New (Dwmac) |
 | :--- | :--- | :--- |

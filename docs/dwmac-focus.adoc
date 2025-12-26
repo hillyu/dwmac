@@ -26,8 +26,7 @@ dwmac focus [-h|--help] --dfs-index <dfs-index>
 // tag::body[]
 {manpurpose}
 
-Contrary to i3, `focus` command doesn't have a separate argument to focus floating windows.
-From `focus` command perspective, floating windows are part of xref:guide.adoc#tree[the tree].
+The `focus` command treats floating windows as part of xref:guide.adoc#tree[the tree].
 The floating window parent container is determined as the smallest tiling container that contains the center of the floating window.
 The technique eliminates the need for an additional binding for floating windows.
 This behavior can be disabled with `--ignore-floating` flag.

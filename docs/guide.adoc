@@ -75,7 +75,7 @@ If the config is found in more than one location then the ambiguity is reported.
 Please see the following config samples:
 
 * <<default-config,The default config>>
-* xref:./goodies.adoc#i3-like-config[i3 like config]
+* xref:./goodies.adoc#i3-like-config[Config Goodies]
 * {url-search-for-config}[Search for configs by other users on GitHub] for inspiration
 
 Dwmac uses TOML format for the config.
@@ -119,9 +119,6 @@ include::config-examples/default-config.toml[]
 You can create multiple sets of bindings by creating different binding modes.
 When you switch to a different binding mode, all the bindings from the current mode are deactivated, and only the bindings specified in the new mode become active.
 The initial binding mode that Dwmac starts out with is "main".
-
-This feature is absolutely identical to the one
-https://i3wm.org/docs/userguide.html#binding_modes[in i3]
 
 Working with binding modes consists of two parts:
 1. defining a binding to switch to the binding mode and 2. declaring the binding mode itself.
@@ -262,7 +259,7 @@ This can be useful if you don't use the macOS hiding feature and want to prevent
 == Layout
 
 Dwmac uses a flat tiling model, specifically the Master-Stack layout (inspired by dwm).
-Unlike tree-based window managers (like i3), there are no nested containers.
+Unlike tree-based window managers, there are no nested containers.
 Each workspace simply manages a flat list of windows.
 
 * The first window in the list is the **Master**. It occupies the main area of the screen (determined by xref:commands.adoc#mfact[mfact]).
@@ -506,7 +503,7 @@ You can track focus changes using the following callbacks: `on-focus-changed` an
 A common use case for the callbacks is to implement "mouse follows focus" behavior. All you need is to combine the callback of your choice with xref:commands.adoc#move-mouse[move-mouse command]:
 [source,toml]
 ----
-on-focused-monitor-changed = ['move-mouse monitor-lazy-center'] # Mouse lazily follows focused monitor (default in i3)
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center'] # Mouse lazily follows focused monitor
 # or
 on-focus-changed = ['move-mouse window-lazy-center'] # Mouse lazily follows any focus (window or workspace)
 ----
@@ -561,8 +558,7 @@ Thus, using one workspace per secondary monitor and "the rest" on the main monit
 
 [NOTE]
 ====
-The only difference between Dwmac and i3 is switching to empty workspaces.
-When you switch to an empty workspace, Dwmac puts the workspace on an assigned monitor; i3 puts the workspace on currently active monitor.
+When you switch to an empty workspace, Dwmac puts the workspace on an assigned monitor.
 
 * I find that Dwmac model works better with <<observation,_the observation_>> listed above.
 * Dwmac model is more consistent (it works the same for empty workspaces and non-empty workspaces)

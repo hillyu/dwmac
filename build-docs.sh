@@ -12,6 +12,7 @@ cp-docs() {
     cp -r ./docs/assets "$1"
     cp -r ./docs/util "$1"
     cp -r ./docs/config-examples "$1"
+    cp ./docs/docinfo.html "$1"
 }
 
 build-site() {
@@ -21,7 +22,7 @@ build-site() {
     cd .site
         # Delete "dwmac " prefifx in synopsis
         sed -E -i '' '/tag::synopsis/, /end::synopsis/ s/^(dwmac | {10})//' dwmac*
-        bundler exec asciidoctor ./guide.adoc ./commands.adoc ./goodies.adoc
+        bundler exec asciidoctor -a docinfo=shared ./guide.adoc ./commands.adoc ./goodies.adoc
         cp guide.html index.html
         cp goodies.html goodness.html # backwards compatibility
         rm -rf ./*.adoc

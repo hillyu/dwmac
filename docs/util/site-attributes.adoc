@@ -6,6 +6,7 @@
 :sectlinks:
 :sectnums:
 :source-highlighter: pygments
+:pygments-style: monokai
 :toc: left
 :env-site:
 :favicon: ./assets/icon.png

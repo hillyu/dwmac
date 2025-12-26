@@ -1,0 +1,160 @@
+<style>
+/* Dark Theme for Dwmac Documentation - Nuclear Option */
+
+/* Global Resets */
+body, html, body.article, body.toc2 {
+    background: #1e1e1e !important;
+    background-color: #1e1e1e !important;
+    color: #e0e0e0 !important;
+    font-family: "Open Sans", "DejaVu Sans", sans-serif;
+}
+
+/* Main Content Area */
+#content {
+    background: #1e1e1e !important;
+    background-color: #1e1e1e !important;
+    color: #e0e0e0 !important;
+    padding-left: 20px;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6, #toctitle, .sidebarblock > .content > .title {
+    color: #d4a5a5 !important; /* Primary Accent */
+    font-family: "Open Sans", "DejaVu Sans", sans-serif;
+    text-decoration: none !important;
+    border-bottom-color: #333 !important;
+}
+
+a, a:link, a:visited {
+    color: #a5d4d4 !important; /* Secondary Accent */
+    text-decoration: none !important;
+}
+a:hover, a:focus {
+    color: #d4a5a5 !important;
+}
+
+/* Header Section */
+#header, body #header {
+    background: #1e1e1e !important;
+    background-color: #1e1e1e !important;
+    border-bottom: 1px solid #333 !important;
+    margin-bottom: 1.5em;
+}
+#header > h1 {
+    color: #d4a5a5 !important;
+    border-bottom: 1px solid #d4a5a5 !important;
+}
+
+/* Table of Contents (Sidebar) - High Specificity */
+#toc, #toc.toc2, body #toc, body.toc2 #toc.toc2 {
+    background: #252525 !important;
+    background-color: #252525 !important;
+    border-right: 1px solid #333 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Media Query to match Asciidoctor's structure */
+@media screen and (min-width: 768px) {
+    #toc.toc2, body #toc.toc2 {
+        background: #252525 !important;
+        background-color: #252525 !important;
+        border-right: 1px solid #333 !important;
+    }
+}
+
+#toc.toc2 #toctitle {
+    color: #d4a5a5 !important;
+    border-bottom-color: #444 !important;
+}
+
+#toc.toc2 a {
+    color: #e0e0e0 !important;
+    text-decoration: none !important;
+}
+
+#toc.toc2 a:hover {
+    color: #d4a5a5 !important;
+    background: none !important;
+}
+
+#toc.toc2 .sectlevel1 > li > a {
+    font-weight: bold;
+    color: #d4a5a5 !important;
+}
+
+/* Code Blocks */
+pre, .listingblock pre, .literalblock pre {
+    background: #2d2d2d !important;
+    background-color: #2d2d2d !important;
+    border: 1px solid #444 !important;
+    color: #f8f8f2 !important;
+    border-radius: 4px;
+}
+
+code {
+    background: #333 !important;
+    background-color: #333 !important;
+    color: #a5d4d4 !important;
+    border: 1px solid #444 !important;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-size: 0.9em;
+    text-shadow: none !important;
+}
+
+/* Tables */
+table.tableblock.grid-all {
+    border: 1px solid #444 !important;
+}
+table.tableblock thead th, table.tableblock tfoot th {
+    background: #333 !important;
+    background-color: #333 !important;
+    color: #d4a5a5 !important;
+    border-bottom: 1px solid #444 !important;
+}
+table.tableblock tr td, table.tableblock tr th {
+    border-top: 1px solid #444 !important;
+    border-bottom: 1px solid #444 !important;
+    color: #e0e0e0 !important;
+    background: #1e1e1e !important;
+    background-color: #1e1e1e !important;
+}
+table.tableblock tr:nth-of-type(even) {
+    background: #252525 !important;
+    background-color: #252525 !important;
+}
+
+/* Admonitions */
+.admonitionblock td.icon .icon-tip::before {
+    text-shadow: none !important;
+    color: #a5d4d4 !important;
+}
+.admonitionblock td.icon .icon-note::before {
+    text-shadow: none !important;
+    color: #d4a5a5 !important;
+}
+.admonitionblock td.content {
+    color: #e0e0e0 !important;
+    border-left: 3px solid #444 !important;
+}
+
+/* Sidebar & Example Blocks */
+.sidebarblock, .exampleblock > .content {
+    background: #252525 !important;
+    background-color: #252525 !important;
+    border: 1px solid #333 !important;
+    border-radius: 4px;
+    color: #e0e0e0 !important;
+}
+.sidebarblock > .content > .title, .exampleblock > .content > .title {
+    color: #d4a5a5 !important;
+}
+
+/* Footer */
+#footer {
+    background: #1e1e1e !important;
+    background-color: #1e1e1e !important;
+    color: #888 !important;
+    border-top: 1px solid #333 !important;
+}
+</style>

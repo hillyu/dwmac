@@ -7,8 +7,10 @@ on:
 
 jobs:
   release:
+    strategy:
+      matrix:
+        os: [macos-15, macos-26]
     name: Build, Release, and Update Tap
-    runs-on: macos-15
     permissions: 
       contents: write # Required for softprops/action-gh-release
     steps:

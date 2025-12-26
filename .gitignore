@@ -1,3 +1,4 @@
+
 /.idea
 /.debug
 /.release
@@ -28,3 +29,4 @@ ACTION.md
 build.log
 DEFINE.md
 PLAN.md
+.gemini

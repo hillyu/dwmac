@@ -1,7 +1,7 @@
 = dwmac(1)
 include::util/man-attributes.adoc[]
 :manname: dwmac
-:manpurpose: i3-like tiling window manager for macOS
+:manpurpose:  Dwm-like tiling window manager for macOS
 
 == Synopsis
 [verse]
@@ -9,7 +9,7 @@ dwmac [-h|--help] [-v|--version] <subcommand> [<subcommand-options>...] [<subcom
 
 == Description
 
-Dwmac is an i3-like tiling window manager for macOS
+Dwmac is an dwm-like tiling window manager for macOS
 
 *dwmac* command line program is used to manipulate Dwmac and query its state.
 
