@@ -9,7 +9,7 @@ jobs:
   release:
     strategy:
       matrix:
-        os: [macos-15, macos-14]
+        os: [macos-15, macos-26]
     runs-on: ${{ matrix.os }}
     name: Build, Release, and Update Tap
     permissions:
