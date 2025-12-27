@@ -52,7 +52,7 @@ final class FocusCommandMasterStackTest: XCTestCase {
         assertEquals(focus.windowOrNil?.windowId, 3)
 
         // focus next with wrapping -> master
-        var args = FocusCmdArgs(rawArgs: [], cardinalOrRelativeDirection: .relative(.next))
+        var args = FocusCmdArgs(rawArgs: [], nextPrev: .next)
         args.rawBoundaries = .workspace
         args.rawBoundariesAction = .wrapAroundTheWorkspace
 
@@ -60,7 +60,7 @@ final class FocusCommandMasterStackTest: XCTestCase {
         assertEquals(focus.windowOrNil?.windowId, 1)
 
         // focus prev with wrapping -> stack2
-        args.cardinalOrRelativeDirection = .relative(.prev)
+        args.nextPrev = .prev
         try await FocusCommand(args: args).run(.defaultEnv, .emptyStdin)
         assertEquals(focus.windowOrNil?.windowId, 3)
     }

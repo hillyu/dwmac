@@ -18,39 +18,17 @@ struct SwapCommand: Command {
         let windows = workspace.tilingWindows
         guard let currentIndex = windows.firstIndex(of: currentWindow) else { return false }
 
-        let targetWindow: Window?
-        switch args.target.val {
-            case .direction(let direction):
-                let nextIndex: Int = if direction == .right || direction == .down {
-                    currentIndex + 1
-                } else {
-                    currentIndex - 1
-                }
-
-                if (0 ..< windows.count).contains(nextIndex) {
-                    targetWindow = windows[nextIndex]
-                } else if args.wrapAround {
-                    targetWindow = (direction == .right || direction == .down) ? windows.first : windows.last
-                } else {
-                    return false
-                }
-            case .relative(let nextPrev):
-                var targetIndex = switch nextPrev {
-                    case .next: currentIndex + 1
-                    case .prev: currentIndex - 1
-                }
-                if !(0 ..< windows.count).contains(targetIndex) {
-                    if !args.wrapAround {
-                        return false
-                    }
-                    targetIndex = (targetIndex + windows.count) % windows.count
-                }
-                targetWindow = windows[targetIndex]
+        var targetIndex = switch args.target.val {
+            case .next: currentIndex + 1
+            case .prev: currentIndex - 1
         }
-
-        guard let targetWindow else {
-            return false
+        if !(0 ..< windows.count).contains(targetIndex) {
+            if !args.wrapAround {
+                return false
+            }
+            targetIndex = (targetIndex + windows.count) % windows.count
         }
+        let targetWindow = windows[targetIndex]
 
         swapWindows(currentWindow, targetWindow)
 

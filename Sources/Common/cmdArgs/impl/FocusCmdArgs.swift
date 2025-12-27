@@ -12,18 +12,18 @@ public struct FocusCmdArgs: CmdArgs {
             "--window-id": SubArgParser(\.windowId, upcastSubArgParserFun(parseUInt32SubArg)),
             "--index": SubArgParser(\.index, upcastSubArgParserFun(parseUInt32SubArg)),
         ],
-        posArgs: [ArgParser(\.cardinalOrRelativeDirection, upcastArgParserFun(parseCardinalOrRelativeDirection))],
+        posArgs: [ArgParser(\.nextPrev, upcastArgParserFun(parseNextPrevArg))],
     )
 
     public var rawBoundaries: Boundaries? = nil // todo cover boundaries wrapping with tests
     public var rawBoundariesAction: WhenBoundariesCrossed? = nil
     public var index: UInt32? = nil
-    public var cardinalOrRelativeDirection: CardinalOrRelativeDirection? = nil
+    public var nextPrev: NextPrev? = nil
     public var floatingAsTiling: Bool = true
 
-    public init(rawArgs: StrArrSlice, cardinalOrRelativeDirection: CardinalOrRelativeDirection) {
+    public init(rawArgs: StrArrSlice, nextPrev: NextPrev) {
         self.commonState = .init(rawArgs)
-        self.cardinalOrRelativeDirection = cardinalOrRelativeDirection
+        self.nextPrev = nextPrev
     }
 
     public init(rawArgs: StrArrSlice, windowId: UInt32) {
@@ -49,7 +49,6 @@ public struct FocusCmdArgs: CmdArgs {
 }
 
 public enum FocusCmdTarget {
-    case direction(CardinalDirection)
     case windowId(UInt32)
     case index(UInt32)
     case relative(NextPrev)
@@ -65,11 +64,8 @@ public enum FocusCmdTarget {
 
 extension FocusCmdArgs {
     public var target: FocusCmdTarget {
-        if let cardinalOrRelativeDirection {
-            return switch cardinalOrRelativeDirection {
-                case .direction(let dir): .direction(dir)
-                case .relative(let nextPrev): .relative(nextPrev)
-            }
+        if let nextPrev {
+            return .relative(nextPrev)
         }
         if let windowId {
             return .windowId(windowId)
@@ -91,8 +87,8 @@ public func parseFocusCmdArgs(_ args: StrArrSlice) -> ParsedCmd<FocusCmdArgs> {
                 ? .failure("\(raw.boundaries.rawValue) and \(raw.boundariesAction.rawValue) is an invalid combination of values")
                 : .cmd(raw)
         }
-        .filter("Mandatory argument is missing. \(CardinalOrRelativeDirection.unionLiteral), --window-id or --index is required") {
-            $0.cardinalOrRelativeDirection != nil || $0.windowId != nil || $0.index != nil
+        .filter("Mandatory argument is missing. \(NextPrev.unionLiteral), --window-id or --index is required") {
+            $0.nextPrev != nil || $0.windowId != nil || $0.index != nil
         }
         .filter("--window-id is incompatible with other options") {
             $0.windowId == nil || $0 == FocusCmdArgs(rawArgs: args, windowId: $0.windowId.orDie())

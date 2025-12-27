@@ -11,9 +11,6 @@ include::util/man-attributes.adoc[]
 // tag::synopsis[]
 dwmac focus [-h|--help] [--ignore-floating]
                 [--boundaries <boundary>] [--boundaries-action <action>]
-                (left|down|up|right)
-dwmac focus [-h|--help] [--ignore-floating]
-                [--boundaries <boundary>] [--boundaries-action <action>]
                 (next|prev)
 dwmac focus [-h|--help] --window-id <window-id>
 dwmac focus [-h|--help] --index <index>
@@ -60,9 +57,6 @@ It may be useful for more reliable scripting.
 
 // =========================================================== Arguments
 include::./util/conditional-arguments-header.adoc[]
-
-(left|down|up|right)::
-Set focus to the nearest window in the given direction.
 
 (next|prev)::
 Set focus to the next or previous window in the order (top-to-bottom and left-to-right) of windows in the current workspace.

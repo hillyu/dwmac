@@ -38,9 +38,6 @@ let focus_monitor_help_generated = """
 let focus_help_generated = """
     USAGE: focus [-h|--help] [--ignore-floating]
                  [--boundaries <boundary>] [--boundaries-action <action>]
-                 (left|down|up|right)
-       OR: focus [-h|--help] [--ignore-floating]
-                 [--boundaries <boundary>] [--boundaries-action <action>]
                  (next|prev)
        OR: focus [-h|--help] --window-id <window-id>
        OR: focus [-h|--help] --index <index>
@@ -135,7 +132,7 @@ let summon_workspace_help_generated = """
 let swap_help_generated = """
     USAGE: swap [-h|--help] [--window-id <window-id>] [--swap-focus]
                 [--wrap-around]
-                (left|down|up|right|next|prev)
+                (next|prev)
     """
 let trigger_binding_help_generated = """
     USAGE: trigger-binding [-h|--help] <binding> --mode <mode-id>

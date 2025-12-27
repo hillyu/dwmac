@@ -51,15 +51,15 @@ final class ConfigTest: XCTestCase {
         let (config, errors) = parseConfig(
             """
             [mode.main.binding]
-                lcmd-a = 'focus left'
-                rcmd-a = 'focus right'
-                cmd-a = 'focus up'
+                lcmd-a = 'focus next'
+                rcmd-a = 'focus prev'
+                cmd-a = 'focus next'
             """,
         )
         assertEquals(errors, [])
-        let lcmdA = HotkeyBinding([.command, .lCommand], .a, [FocusCommand.new(direction: .left)], descriptionWithKeyNotation: "lcmd-a")
-        let rcmdA = HotkeyBinding([.command, .rCommand], .a, [FocusCommand.new(direction: .right)], descriptionWithKeyNotation: "rcmd-a")
-        let cmdA = HotkeyBinding(.command, .a, [FocusCommand.new(direction: .up)], descriptionWithKeyNotation: "cmd-a")
+        let lcmdA = HotkeyBinding([.command, .lCommand], .a, [FocusCommand.new(relative: .next)], descriptionWithKeyNotation: "lcmd-a")
+        let rcmdA = HotkeyBinding([.command, .rCommand], .a, [FocusCommand.new(relative: .prev)], descriptionWithKeyNotation: "rcmd-a")
+        let cmdA = HotkeyBinding(.command, .a, [FocusCommand.new(relative: .next)], descriptionWithKeyNotation: "cmd-a")
 
         assertEquals(
             config.modes[mainModeId]?.bindings[lcmdA.descriptionWithKeyCode],
@@ -99,11 +99,11 @@ final class ConfigTest: XCTestCase {
         let (config, errors) = parseConfig(
             """
             [mode.main.binding]
-                alt-h = 'focus left'
+                alt-h = 'focus next'
             """,
         )
         assertEquals(errors, [])
-        let binding = HotkeyBinding(.option, .h, [FocusCommand.new(direction: .left)])
+        let binding = HotkeyBinding(.option, .h, [FocusCommand.new(relative: .next)])
         assertEquals(
             config.modes[mainModeId],
             Mode(name: nil, bindings: [binding.descriptionWithKeyCode: binding]),
@@ -114,7 +114,7 @@ final class ConfigTest: XCTestCase {
         let (config, errors) = parseConfig(
             """
             [mode.foo.binding]
-                alt-h = 'focus left'
+                alt-h = 'focus next'
             """,
         )
         assertEquals(
@@ -128,9 +128,9 @@ final class ConfigTest: XCTestCase {
         let (config, errors) = parseConfig(
             """
             [mode.main.binding]
-                alt-hh = 'focus left'
-                aalt-j = 'focus down'
-                alt-k = 'focus up'
+                alt-hh = 'focus next'
+                aalt-j = 'focus next'
+                alt-k = 'focus prev'
             """,
         )
         assertEquals(
@@ -140,7 +140,7 @@ final class ConfigTest: XCTestCase {
                 "mode.main.binding.alt-hh: Can\'t parse the key in \'alt-hh\' binding",
             ],
         )
-        let binding = HotkeyBinding(.option, .k, [FocusCommand.new(direction: .up)])
+        let binding = HotkeyBinding(.option, .k, [FocusCommand.new(relative: .prev)])
         assertEquals(
             config.modes[mainModeId],
             Mode(name: nil, bindings: [binding.descriptionWithKeyCode: binding]),
@@ -154,7 +154,7 @@ final class ConfigTest: XCTestCase {
                 alt-1 = 'workspace 1'
                 alt-2 = 'workspace 2'
                 alt-3 = ['workspace 3']
-                alt-4 = ['workspace 4', 'focus left']
+                alt-4 = ['workspace 4', 'focus next']
             """,
         )
         assertEquals(errors.descriptions, [])

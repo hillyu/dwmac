@@ -11,7 +11,7 @@ include::util/man-attributes.adoc[]
 // tag::synopsis[]
 dwmac swap [-h|--help] [--window-id <window-id>] [--swap-focus]
                [--wrap-around]
-               (left|down|up|right|next|prev)
+               (next|prev)
 
 // end::synopsis[]
 
@@ -40,9 +40,6 @@ Wrap around if the window is at the edge of the workspace window list.
 
 // =========================================================== Arguments
 include::./util/conditional-arguments-header.adoc[]
-
-(left|down|up|right)::
-Swaps the focused window with the nearest window in the given direction.
 
 (next|prev)::
 Swaps the focused window with the next or previous window in the order (top-to-bottom and left-to-right) of windows in the current workspace.

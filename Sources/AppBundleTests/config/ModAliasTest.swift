@@ -9,11 +9,11 @@ final class ModAliasTest: XCTestCase {
             """
             mod = 'cmd-alt'
             [mode.main.binding]
-                mod-e = 'focus left'
+                mod-e = 'focus next'
             """,
         )
         XCTAssertEqual(errors, [])
-        let binding = HotkeyBinding([.command, .option], .e, [FocusCommand.new(direction: .left)])
+        let binding = HotkeyBinding([.command, .option], .e, [FocusCommand.new(relative: .next)])
         XCTAssertEqual(config.modes[mainModeId]?.bindings[binding.descriptionWithKeyCode], binding)
     }
 
@@ -22,11 +22,11 @@ final class ModAliasTest: XCTestCase {
             """
             mod = 'cmd-alt-ctrl-shift'
             [mode.main.binding]
-                mod-e = 'focus left'
+                mod-e = 'focus next'
             """,
         )
         XCTAssertEqual(errors, [])
-        let binding = HotkeyBinding([.command, .option, .control, .shift], .e, [FocusCommand.new(direction: .left)])
+        let binding = HotkeyBinding([.command, .option, .control, .shift], .e, [FocusCommand.new(relative: .next)])
         XCTAssertEqual(config.modes[mainModeId]?.bindings[binding.descriptionWithKeyCode], binding)
     }
 
@@ -34,11 +34,11 @@ final class ModAliasTest: XCTestCase {
         let (config, errors) = parseConfig(
             """
             [mode.main.binding]
-                alt-e = 'focus left'
+                alt-e = 'focus next'
             """,
         )
         XCTAssertEqual(errors, [])
-        let binding = HotkeyBinding(.option, .e, [FocusCommand.new(direction: .left)])
+        let binding = HotkeyBinding(.option, .e, [FocusCommand.new(relative: .next)])
         XCTAssertEqual(config.modes[mainModeId]?.bindings[binding.descriptionWithKeyCode], binding)
     }
 
@@ -46,7 +46,7 @@ final class ModAliasTest: XCTestCase {
         let (_, errors) = parseConfig(
             """
             [mode.main.binding]
-                mod-e = 'focus left'
+                mod-e = 'focus next'
             """,
         )
         XCTAssertEqual(errors.descriptions, ["mode.main.binding.mod-e: Can't parse modifiers in 'mod-e' binding"])
