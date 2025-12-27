@@ -9,9 +9,10 @@ jobs:
   release:
     strategy:
       matrix:
-        os: [macos-15, macos-26]
+        os: [macos-15, macos-14]
+    runs-on: ${{ matrix.os }}
     name: Build, Release, and Update Tap
-    permissions: 
+    permissions:
       contents: write # Required for softprops/action-gh-release
     steps:
       - name: Checkout Code
