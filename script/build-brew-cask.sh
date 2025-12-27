@@ -20,7 +20,8 @@ if test -z "$cask_name"; then echo "--cask-name is mandatory" > /dev/stderr; exi
 case "$cask_name" in
     dwmac) conflicts_with_casks="conflicts_with cask: 'dwmac-dev'";;
     dwmac-dev) conflicts_with_casks="conflicts_with cask: 'dwmac'";;
-    *) echo "Unknown cask name: $cask_name. Allowed cask names: dwmac, dwmac-dev" > /dev/stderr; exit 1;;
+    dwmac@*) conflicts_with_casks="conflicts_with cask: ['dwmac', 'dwmac-dev']";;
+    *) echo "Unknown cask name: $cask_name. Allowed cask names: dwmac, dwmac-dev, dwmac@*" > /dev/stderr; exit 1;;
 esac
 
 zip_file=''

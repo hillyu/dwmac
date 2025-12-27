@@ -53,6 +53,12 @@ jobs:
             --build-version "$VERSION" \
             --zip-uri "$ZIP_URL"
 
+          # Generate versioned Cask
+          ./script/build-brew-cask.sh \
+            --cask-name "dwmac@$VERSION" \
+            --build-version "$VERSION" \
+            --zip-uri "$ZIP_URL"
+
       - name: Update Tap Repository
         env:
           TAP_REPO: "hillyu/homebrew-tap"
@@ -68,9 +74,10 @@ jobs:
           # Copy the generated Cask to the Tap
           mkdir -p tap-repo/Casks
           cp .release/dwmac.rb tap-repo/Casks/dwmac.rb
+          cp ".release/dwmac@$VERSION.rb" tap-repo/Casks/
           
           # Commit and Push
           cd tap-repo
-          git add Casks/dwmac.rb
-          git commit -m "Update dwmac to ${{ github.ref_name }}"
+          git add Casks/dwmac.rb "Casks/dwmac@$VERSION.rb"
+          git commit -m "Update dwmac to $VERSION"
           git push origin main
