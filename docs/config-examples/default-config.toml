@@ -109,15 +109,15 @@ on-mode-changed = []
     cmd-alt-ctrl-slash = 'layout master-stack'
 
     # See: https://hillyu.github.io/Dwmac/commands#focus
-    cmd-alt-ctrl-j = 'focus dfs-next'
-    cmd-alt-ctrl-k = 'focus dfs-prev'
+    cmd-alt-ctrl-j = 'focus next'
+    cmd-alt-ctrl-k = 'focus prev'
     cmd-alt-ctrl-h = 'mfact -0.1'
     cmd-alt-ctrl-l = 'mfact +0.1'
 
     # See: https://hillyu.github.io/Dwmac/commands#move
     cmd-alt-ctrl-space = 'move-node-to-master'
-    cmd-alt-ctrl-shift-j = 'swap dfs-next'
-    cmd-alt-ctrl-shift-k = 'swap dfs-prev'
+    cmd-alt-ctrl-shift-j = 'swap next'
+    cmd-alt-ctrl-shift-k = 'swap prev'
 
     # See: https://hillyu.github.io/Dwmac/commands#resize
     cmd-alt-ctrl-minus = 'resize smart -50'

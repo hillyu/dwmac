@@ -34,10 +34,10 @@ struct SwapCommand: Command {
                 } else {
                     return false
                 }
-            case .dfsRelative(let nextPrev):
+            case .relative(let nextPrev):
                 var targetIndex = switch nextPrev {
-                    case .dfsNext: currentIndex + 1
-                    case .dfsPrev: currentIndex - 1
+                    case .next: currentIndex + 1
+                    case .prev: currentIndex - 1
                 }
                 if !(0 ..< windows.count).contains(targetIndex) {
                     if !args.wrapAround {

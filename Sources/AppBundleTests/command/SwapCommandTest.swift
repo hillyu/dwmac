@@ -42,17 +42,17 @@ final class SwapCommandTest: XCTestCase {
         }
         // [1, 2, 3]
 
-        try await SwapCommand(args: SwapCmdArgs(rawArgs: [], target: .dfsRelative(.dfsNext))).run(.defaultEnv, .emptyStdin)
+        try await SwapCommand(args: SwapCmdArgs(rawArgs: [], target: .relative(.next))).run(.defaultEnv, .emptyStdin)
         assertEquals(workspace.layoutDescription,
                      .h_master_stack([.window(2), .window(1), .window(3)]))
         assertEquals(focus.windowOrNil?.windowId, 1)
 
-        try await SwapCommand(args: SwapCmdArgs(rawArgs: [], target: .dfsRelative(.dfsNext))).run(.defaultEnv, .emptyStdin)
+        try await SwapCommand(args: SwapCmdArgs(rawArgs: [], target: .relative(.next))).run(.defaultEnv, .emptyStdin)
         assertEquals(workspace.layoutDescription,
                      .h_master_stack([.window(2), .window(3), .window(1)]))
         assertEquals(focus.windowOrNil?.windowId, 1)
 
-        try await SwapCommand(args: SwapCmdArgs(rawArgs: [], target: .dfsRelative(.dfsPrev))).run(.defaultEnv, .emptyStdin)
+        try await SwapCommand(args: SwapCmdArgs(rawArgs: [], target: .relative(.prev))).run(.defaultEnv, .emptyStdin)
         assertEquals(workspace.layoutDescription,
                      .h_master_stack([.window(2), .window(1), .window(3)]))
         assertEquals(focus.windowOrNil?.windowId, 1)

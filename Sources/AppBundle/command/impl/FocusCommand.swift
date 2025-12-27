@@ -44,21 +44,21 @@ struct FocusCommand: Command {
                 } else {
                     return io.err("Can't find window with ID \(windowId)")
                 }
-            case .dfsIndex(let dfsIndex):
+            case .index(let index):
                 let windows = target.workspace.allWindows
-                if let windowToFocus = windows.getOrNil(atIndex: Int(dfsIndex)) {
+                if let windowToFocus = windows.getOrNil(atIndex: Int(index)) {
                     return windowToFocus.focusWindow()
                 } else {
-                    return io.err("Can't find window with DFS index \(dfsIndex)")
+                    return io.err("Can't find window with index \(index)")
                 }
-            case .dfsRelative(let nextPrev):
+            case .relative(let nextPrev):
                 let windows = target.workspace.allWindows
                 guard let currentIndex = windows.firstIndex(where: { $0 == target.windowOrNil }) else {
                     return false
                 }
                 var targetIndex = switch nextPrev {
-                    case .dfsNext: currentIndex + 1
-                    case .dfsPrev: currentIndex - 1
+                    case .next: currentIndex + 1
+                    case .prev: currentIndex - 1
                 }
                 if !(0 ..< windows.count).contains(targetIndex) {
                     let action = args.rawBoundariesAction ?? .wrapAroundTheWorkspace

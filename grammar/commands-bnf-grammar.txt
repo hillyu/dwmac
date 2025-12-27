@@ -19,7 +19,7 @@ dwmac -h;
     | focus [<focus_direction_flag>]... (left|down|up|right) [<focus_direction_flag>]...
     | focus --window-id <window_id>
     | focus --dfs-index <number>
-    | focus [<focus_dfs_relative_flag>]... (dfs-next|dfs-prev) [<focus_dfs_relative_flag>]...
+    | focus [<focus_relative_flag>]... (next|prev) [<focus_relative_flag>]...
 
     | focus-back-and-forth
 
@@ -56,7 +56,7 @@ dwmac -h;
 
     | resize [--window-id <window_id>] (smart|smart-opposite|width|height) [+|-]<number> [--window-id <window_id>]
 
-    | swap [--swap-focus|--wrap-around|--window-id <window_id>]... (left|down|up|right|dfs-next|dfs-prev) [--swap-focus|--wrap-around|--window-id <window_id>]...
+    | swap [--swap-focus|--wrap-around|--window-id <window_id>]... (left|down|up|right|next|prev) [--swap-focus|--wrap-around|--window-id <window_id>]...
 
     | summon-workspace [--fail-if-noop] <workspace> [--fail-if-noop]
 
@@ -110,7 +110,7 @@ dwmac -h;
 <move_node_to_monitor2_flag> ::= --window-id <window_id>|--focus-follows-window|--fail-if-noop;
 
 <focus_direction_flag> ::= --boundaries <boundary>|--boundaries-action <boundaries_action>|--ignore-floating;
-<focus_dfs_relative_flag> ::= --boundaries-action <boundaries_action>|--ignore-floating;
+<focus_relative_flag> ::= --boundaries-action <boundaries_action>|--ignore-floating;
 <boundaries_action> ::= stop|fail|wrap-around-the-workspace|wrap-around-all-monitors;
 <boundary> ::= workspace|all-monitors-outer-frame;
 

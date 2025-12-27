@@ -41,9 +41,9 @@ let focus_help_generated = """
                  (left|down|up|right)
        OR: focus [-h|--help] [--ignore-floating]
                  [--boundaries <boundary>] [--boundaries-action <action>]
-                 (dfs-next|dfs-prev)
+                 (next|prev)
        OR: focus [-h|--help] --window-id <window-id>
-       OR: focus [-h|--help] --dfs-index <dfs-index>
+       OR: focus [-h|--help] --index <index>
     """
 let fullscreen_help_generated = """
     USAGE: fullscreen [-h|--help]     [--window-id <window-id>] [--no-outer-gaps]
@@ -118,7 +118,7 @@ let move_workspace_to_monitor_help_generated = """
        OR: move-workspace-to-monitor [-h|--help] [--workspace <workspace>] <monitor-pattern>...
     """
 let move_help_generated = """
-    USAGE: move [-h|--help] [--window-id <window-id>] [--boundaries <boundary>] [--boundaries-action <boundary-action>] (left|down|up|right)
+    USAGE: move [-h|--help] [--window-id <window-id>] (left|down|up|right)
     """
 let reload_config_help_generated = """
     USAGE: reload-config [-h|--help] [--no-gui] [--dry-run]
@@ -126,13 +126,16 @@ let reload_config_help_generated = """
 let resize_help_generated = """
     USAGE: resize [-h|--help] [--window-id <window-id>] (smart|smart-opposite|width|height) [+|-]<number>
     """
+let split_help_generated = """
+    USAGE: split [-h|--help] [--window-id <window-id>] (horizontal|vertical|opposite)
+    """
 let summon_workspace_help_generated = """
     USAGE: summon-workspace [-h|--help] [--fail-if-noop] <workspace>
     """
 let swap_help_generated = """
     USAGE: swap [-h|--help] [--window-id <window-id>] [--swap-focus]
                 [--wrap-around]
-                (left|down|up|right|dfs-next|dfs-prev)
+                (left|down|up|right|next|prev)
     """
 let trigger_binding_help_generated = """
     USAGE: trigger-binding [-h|--help] <binding> --mode <mode-id>

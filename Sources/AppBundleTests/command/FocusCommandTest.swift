@@ -8,7 +8,7 @@ final class FocusCommandTest: XCTestCase {
 
     func testParse() {
         XCTAssertTrue(parseCommand("focus --boundaries left").errorOrNil?.contains("Possible values") == true)
-        var expected = FocusCmdArgs(rawArgs: [], cardinalOrDfsDirection: .direction(.left))
+        var expected = FocusCmdArgs(rawArgs: [], cardinalOrRelativeDirection: .direction(.left))
         expected.rawBoundaries = .workspace
         testParseCommandSucc("focus --boundaries workspace left", expected)
 
@@ -21,8 +21,8 @@ final class FocusCommandTest: XCTestCase {
             "--window-id is incompatible with other options",
         )
         assertEquals(
-            parseCommand("focus --boundaries all-monitors-outer-frame dfs-next").errorOrNil,
-            "(dfs-next|dfs-prev) only supports --boundaries workspace",
+            parseCommand("focus --boundaries all-monitors-outer-frame next").errorOrNil,
+            "(next|prev) only supports --boundaries workspace",
         )
     }
 
@@ -110,7 +110,7 @@ final class FocusCommandTest: XCTestCase {
         }
 
         assertEquals(focus.windowOrNil?.windowId, 1)
-        var args = FocusCmdArgs(rawArgs: [], cardinalOrDfsDirection: .direction(.left))
+        var args = FocusCmdArgs(rawArgs: [], cardinalOrRelativeDirection: .direction(.left))
         args.rawBoundaries = .workspace
         args.rawBoundariesAction = .wrapAroundTheWorkspace
         try await FocusCommand(args: args).run(.defaultEnv, .emptyStdin)
@@ -127,18 +127,18 @@ final class FocusCommandTest: XCTestCase {
 
         assertEquals(focus.windowOrNil?.windowId, 1)
 
-        try await FocusCommand.new(dfsRelative: .dfsNext).run(.defaultEnv, .emptyStdin)
+        try await FocusCommand.new(relative: .next).run(.defaultEnv, .emptyStdin)
         assertEquals(focus.windowOrNil?.windowId, 2)
-        try await FocusCommand.new(dfsRelative: .dfsNext).run(.defaultEnv, .emptyStdin)
+        try await FocusCommand.new(relative: .next).run(.defaultEnv, .emptyStdin)
         assertEquals(focus.windowOrNil?.windowId, 3)
-        try await FocusCommand.new(dfsRelative: .dfsNext).run(.defaultEnv, .emptyStdin)
+        try await FocusCommand.new(relative: .next).run(.defaultEnv, .emptyStdin)
         assertEquals(focus.windowOrNil?.windowId, 4)
 
-        try await FocusCommand.new(dfsRelative: .dfsPrev).run(.defaultEnv, .emptyStdin)
+        try await FocusCommand.new(relative: .prev).run(.defaultEnv, .emptyStdin)
         assertEquals(focus.windowOrNil?.windowId, 3)
-        try await FocusCommand.new(dfsRelative: .dfsPrev).run(.defaultEnv, .emptyStdin)
+        try await FocusCommand.new(relative: .prev).run(.defaultEnv, .emptyStdin)
         assertEquals(focus.windowOrNil?.windowId, 2)
-        try await FocusCommand.new(dfsRelative: .dfsPrev).run(.defaultEnv, .emptyStdin)
+        try await FocusCommand.new(relative: .prev).run(.defaultEnv, .emptyStdin)
         assertEquals(focus.windowOrNil?.windowId, 1)
     }
 
@@ -152,13 +152,13 @@ final class FocusCommandTest: XCTestCase {
         XCTAssertTrue(Window.get(byId: 1)?.focusWindow() == true)
         assertEquals(focus.windowOrNil?.windowId, 1)
 
-        try await FocusCommand.new(dfsRelative: .dfsNext).run(.defaultEnv, .emptyStdin)
+        try await FocusCommand.new(relative: .next).run(.defaultEnv, .emptyStdin)
         assertEquals(focus.windowOrNil?.windowId, 2)
 
-        try await FocusCommand.new(dfsRelative: .dfsNext).run(.defaultEnv, .emptyStdin)
+        try await FocusCommand.new(relative: .next).run(.defaultEnv, .emptyStdin)
         assertEquals(focus.windowOrNil?.windowId, 3) // This is the floating window
 
-        var args = FocusCmdArgs(rawArgs: [], cardinalOrDfsDirection: .dfsRelative(.dfsNext))
+        var args = FocusCmdArgs(rawArgs: [], cardinalOrRelativeDirection: .relative(.next))
         args.rawBoundariesAction = .wrapAroundTheWorkspace
         try await FocusCommand(args: args).run(.defaultEnv, .emptyStdin)
         assertEquals(focus.windowOrNil?.windowId, 1) // Wrap around
@@ -172,7 +172,7 @@ final class FocusCommandTest: XCTestCase {
 
         assertEquals(focus.windowOrNil?.windowId, 1)
 
-        var args = FocusCmdArgs(rawArgs: [], cardinalOrDfsDirection: .dfsRelative(.dfsPrev))
+        var args = FocusCmdArgs(rawArgs: [], cardinalOrRelativeDirection: .relative(.prev))
 
         args.rawBoundariesAction = .stop
         assertEquals(try await FocusCommand(args: args).run(.defaultEnv, .emptyStdin).exitCode, 0)
@@ -186,7 +186,7 @@ final class FocusCommandTest: XCTestCase {
         assertEquals(try await FocusCommand(args: args).run(.defaultEnv, .emptyStdin).exitCode, 0)
         assertEquals(focus.windowOrNil?.windowId, 2)
 
-        args.cardinalOrDfsDirection = .dfsRelative(.dfsNext)
+        args.cardinalOrRelativeDirection = .relative(.next)
 
         args.rawBoundariesAction = .stop
         assertEquals(try await FocusCommand(args: args).run(.defaultEnv, .emptyStdin).exitCode, 0)
@@ -204,9 +204,9 @@ final class FocusCommandTest: XCTestCase {
 
 extension FocusCommand {
     static func new(direction: CardinalDirection) -> FocusCommand {
-        FocusCommand(args: FocusCmdArgs(rawArgs: [], cardinalOrDfsDirection: .direction(direction)))
+        FocusCommand(args: FocusCmdArgs(rawArgs: [], cardinalOrRelativeDirection: .direction(direction)))
     }
-    static func new(dfsRelative: DfsNextPrev) -> FocusCommand {
-        FocusCommand(args: FocusCmdArgs(rawArgs: [], cardinalOrDfsDirection: .dfsRelative(dfsRelative)))
+    static func new(relative: NextPrev) -> FocusCommand {
+        FocusCommand(args: FocusCmdArgs(rawArgs: [], cardinalOrRelativeDirection: .relative(relative)))
     }
 }

@@ -162,23 +162,20 @@ final class ConfigTest: XCTestCase {
     }
 
     func testUnknownTopLevelKeyParseError() {
-        let (config, errors) = parseConfig(
+        let (_, errors) = parseConfig(
             """
             unknownKey = true
-            enable-normalization-flatten-containers = false
             """,
         )
         assertEquals(
             errors.descriptions,
             ["unknownKey: Unknown top-level key"],
         )
-        assertEquals(config.enableNormalizationFlattenContainers, false)
     }
 
     func testUnknownKeyParseError() {
-        let (config, errors) = parseConfig(
+        let (_, errors) = parseConfig(
             """
-            enable-normalization-flatten-containers = false
             [gaps]
                 unknownKey = true
             """,
@@ -187,18 +184,17 @@ final class ConfigTest: XCTestCase {
             errors.descriptions,
             ["gaps.unknownKey: Unknown key"],
         )
-        assertEquals(config.enableNormalizationFlattenContainers, false)
     }
 
     func testTypeMismatch() {
         let (_, errors) = parseConfig(
             """
-            enable-normalization-flatten-containers = 'true'
+            start-at-login = 'true'
             """,
         )
         assertEquals(
             errors.descriptions,
-            ["enable-normalization-flatten-containers: Expected type is \'bool\'. But actual type is \'string\'"],
+            ["start-at-login: Expected type is \'bool\'. But actual type is \'string\'"],
         )
     }
 

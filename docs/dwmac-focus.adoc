@@ -14,9 +14,9 @@ dwmac focus [-h|--help] [--ignore-floating]
                 (left|down|up|right)
 dwmac focus [-h|--help] [--ignore-floating]
                 [--boundaries <boundary>] [--boundaries-action <action>]
-                (dfs-next|dfs-prev)
+                (next|prev)
 dwmac focus [-h|--help] --window-id <window-id>
-dwmac focus [-h|--help] --dfs-index <dfs-index>
+dwmac focus [-h|--help] --index <index>
 
 // end::synopsis[]
 
@@ -26,8 +26,7 @@ dwmac focus [-h|--help] --dfs-index <dfs-index>
 // tag::body[]
 {manpurpose}
 
-The `focus` command treats floating windows as part of xref:guide.adoc#tree[the tree].
-The floating window parent container is determined as the smallest tiling container that contains the center of the floating window.
+The `focus` command treats floating windows as part of the order of windows.
 The technique eliminates the need for an additional binding for floating windows.
 This behavior can be disabled with `--ignore-floating` flag.
 
@@ -52,12 +51,11 @@ The default is: `stop`
 --window-id <window-id>::
 Focus the window with specified `<window-id>`
 
---dfs-index <dfs-index>::
-Focus window by its index, based on a depth-first search (DFS) of the window within the workspace tree.
-Index is 0-based.
+--index <index>::
+Focus window by its 0-based index in the workspace window list.
 
 --ignore-floating::
-Don't perceive floating windows as part of the tree.
+Don't perceive floating windows as part of the workspace window list.
 It may be useful for more reliable scripting.
 
 // =========================================================== Arguments
@@ -66,8 +64,8 @@ include::./util/conditional-arguments-header.adoc[]
 (left|down|up|right)::
 Set focus to the nearest window in the given direction.
 
-(dfs-next|dfs-prev)::
-Set focus to the window before or after the current window in the depth-first order (top-to-bottom and left-to-right) of windows in the current workspace tree.
+(next|prev)::
+Set focus to the next or previous window in the order (top-to-bottom and left-to-right) of windows in the current workspace.
 In this mode, `--boundaries` must be `workspace` (the default) and `--boundaries-action` can be set to one of `(stop|fail|wrap-around-the-workspace)`.
 
 // end::body[]

@@ -10,14 +10,14 @@ public struct SwapCmdArgs: CmdArgs {
             "--wrap-around": trueBoolFlag(\.wrapAround),
             "--window-id": optionalWindowIdFlag(),
         ],
-        posArgs: [newArgParser(\.target, parseCardinalOrDfsDirection, mandatoryArgPlaceholder: CardinalOrDfsDirection.unionLiteral)],
+        posArgs: [newArgParser(\.target, parseCardinalOrRelativeDirection, mandatoryArgPlaceholder: CardinalOrRelativeDirection.unionLiteral)],
     )
 
-    public var target: Lateinit<CardinalOrDfsDirection> = .uninitialized
+    public var target: Lateinit<CardinalOrRelativeDirection> = .uninitialized
     public var swapFocus: Bool = false
     public var wrapAround: Bool = false
 
-    public init(rawArgs: [String], target: CardinalOrDfsDirection) {
+    public init(rawArgs: [String], target: CardinalOrRelativeDirection) {
         self.commonState = .init(rawArgs.slice)
         self.target = .initialized(target)
     }

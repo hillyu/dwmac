@@ -195,10 +195,10 @@ This allows you to easily change your preferred modifiers in one place.
 mod = 'cmd-alt'
 
 [mode.main.binding]
-    mod-h = 'focus left'
-    mod-j = 'focus down'
-    mod-k = 'focus up'
-    mod-l = 'focus right'
+    mod-j = 'focus next'
+    mod-k = 'focus prev'
+    mod-shift-j = 'swap next'
+    mod-shift-k = 'swap prev'
 ----
 
 [#exec-env-vars]
