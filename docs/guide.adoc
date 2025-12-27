@@ -75,6 +75,7 @@ If the config is found in more than one location then the ambiguity is reported.
 Please see the following config samples:
 
 * <<default-config,The default config>>
+* link:config-examples/hillyu-dwmac.toml[Hill's personal config (hillyu-dwmac.toml)] - Shows fine-grained modifiers usage
 * xref:./goodies.adoc#i3-like-config[Config Goodies]
 * {url-search-for-config}[Search for configs by other users on GitHub] for inspiration
 
@@ -199,6 +200,24 @@ mod = 'cmd-alt'
     mod-k = 'focus prev'
     mod-shift-j = 'swap next'
     mod-shift-k = 'swap prev'
+----
+
+=== Fine-grained modifiers
+
+Dwmac supports distinguishing between left and right modifier keys.
+Available modifiers are:
+
+* `shift`, `lshift`, `rshift`
+* `ctrl`, `lctrl`, `rctrl`
+* `alt` (or `opt`), `lalt`, `ralt`
+* `cmd`, `lcmd`, `rcmd`
+
+Example:
+[source,toml]
+----
+[mode.main.binding]
+    rcmd-z = 'fullscreen' # Zoom window with Right Command + Z
+    lcmd-z = 'reload-config' # Reload config with Left Command + Z
 ----
 
 [#exec-env-vars]
