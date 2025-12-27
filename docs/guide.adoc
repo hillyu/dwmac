@@ -76,7 +76,6 @@ Please see the following config samples:
 
 * <<default-config,The default config>>
 * link:config-examples/hillyu-dwmac.toml[Hill's personal config (hillyu-dwmac.toml)] - Shows fine-grained modifiers usage
-* xref:./goodies.adoc#i3-like-config[Config Goodies]
 * {url-search-for-config}[Search for configs by other users on GitHub] for inspiration
 
 Dwmac uses TOML format for the config.
