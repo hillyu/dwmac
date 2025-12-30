@@ -1,6 +1,7 @@
 # Place a copy of this config to ~/.dwmac.toml
 # After that, you can edit ~/.dwmac.toml to your liking
 
+# General Settings {{{
 # You can use it to add commands that run after Dwmac startup.
 # 'after-startup-command' is run after 'after-login-command'
 # Available commands : https://hillyu.github.io/Dwmac/commands
@@ -32,15 +33,20 @@ automatically-unhide-macos-hidden-apps = true
 
 default-mfact=0.6
 attach-below = true
+center-floating-windows = true
 # Possible values: (qwerty|dvorak|colemak)
 # See https://hillyu.github.io/Dwmac/guide#key-mapping
 
 
 mod = 'rcmd'
+# }}}
 
+# Key Mapping {{{
 [key-mapping]
 preset = 'qwerty'
+# }}}
 
+# Gaps {{{
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
 # Possible values:
 # - Constant:     gaps.outer.top = 8
@@ -54,14 +60,16 @@ inner.horizontal = 10
 inner.vertical =   10
 outer.left =       20
 outer.bottom =     10
-# outer.top =        10
-outer.top = [
-        # Minimal gap on internal display
-        { monitor."^built-in retina display$" = 10 },
-        # Larger gap on all other displays
-        30,]
+outer.top =        10
+# outer.top = [
+#         # Minimal gap on internal display
+#         { monitor."^built-in retina display$" = 10 },
+#         # Larger gap on all other displays
+#         30,]
 outer.right =      20
+# }}}
 
+# Main Mode Bindings {{{
 # 'main' binding mode declaration
 # See: https://hillyu.github.io/Dwmac/guide#binding-modes
 # 'main' binding mode must be always presented
@@ -85,6 +93,7 @@ outer.right =      20
 
 # All possible commands: https://hillyu.github.io/Dwmac/commands
 
+# Launchers & Config {{{
 # See: https://hillyu.github.io/Dwmac/commands#exec-and-forget
 # You can uncomment the following lines to open up terminal with mod + enter shortcut
 # (like in i3)
@@ -96,33 +105,45 @@ outer.right =      20
 # '''
 
 mod-enter = 'exec-and-forget osascript $HOME/bin/ghostty_launcher_macosa'
-mod-shift-e = 'reload-config'
+mod-t = 'exec-and-forget osascript $HOME/bin/ghostty_quickterm_macosa'
+mod-c ='exec-and-forget open -na Ghostty --args --title="mfloating" -e nvim .config/dwmac/dwmac.toml'
 # mod-t ='exec-and-forget /Applications/Alacritty.app/Contents/MacOS/alacritty -e ~/bin/tmux_run.sh'
-mod-f ='macos-native-fullscreen'
-rcmd-z ='fullscreen' # zoom window
+mod-shift-e = 'reload-config'
+cmd-q ='close --quit-if-last-window'
+
+# See: https://hillyu.github.io/Dwmac/commands#mode
+mod-shift-semicolon = 'mode service'
+# }}}
+
+# Window Focus & Layout {{{
 # See: https://hillyu.github.io/Dwmac/commands#layout
 mod-shift-space = 'layout floating tiling'
+mod-f ='macos-native-fullscreen'
+rcmd-z ='fullscreen' # zoom window
 
-cmd-q ='close --quit-if-last-window'
 # See: https://hillyu.github.io/Dwmac/commands#focus
 mod-semicolon = 'focus-master-or-back' 
 mod-j = 'focus next'
 mod-k = 'focus prev'
 mod-h = 'mfact -0.1'
 mod-l = 'mfact +0.1'
+# }}}
 
+# Window Movement {{{
 # See: https://hillyu.github.io/Dwmac/commands#move
 mod-space ='move-node-to-master'
 mod-shift-j = 'swap next'
 mod-shift-k = 'swap prev'
 
-mod-shift-h = 'resize smart -10'
-mod-shift-l = 'resize smart +10'
-
 mod-u = 'move down'
 mod-i = 'move up'
 mod-y = 'move left'
 mod-o = 'move right'
+# }}}
+
+# Window Resize {{{
+mod-shift-h = 'resize smart -10'
+mod-shift-l = 'resize smart +10'
 
 mod-shift-u = 'resize height +10'
 mod-shift-i = 'resize height -10'
@@ -132,7 +153,9 @@ mod-shift-o = 'resize width +10'
 # See: https://hillyu.github.io/Dwmac/commands#resize
 mod-minus = 'resize smart -50'
 mod-equal = 'resize smart +50'
+# }}}
 
+# Workspace Management {{{
 # See: https://hillyu.github.io/Dwmac/commands#workspace
 mod-1 = 'workspace 1'
 mod-2 = 'workspace 2'
@@ -201,15 +224,18 @@ mod-shift-9 = 'move-node-to-workspace 9'
 #
 # See: https://hillyu.github.io/Dwmac/commands#workspace-back-and-forth
 mod-tab = 'workspace-back-and-forth'
+# }}}
+
+# Monitor Management {{{
 # See: https://hillyu.github.io/Dwmac/commands#move-workspace-to-monitor
 mod-period = 'focus-monitor next'
 mod-comma = 'focus-monitor prev'
 mod-shift-period = 'move-node-to-monitor --wrap-around next'
 mod-shift-comma = 'move-node-to-monitor --wrap-around prev'
+# }}}
+# }}}
 
-# See: https://hillyu.github.io/Dwmac/commands#mode
-mod-shift-semicolon = 'mode service'
-
+# Window Rules {{{
 # on-window-detected events are like window rules:
 # [[on-window-detected]]
 # if.app-name-regex-substring = 'settings'
@@ -218,27 +244,30 @@ mod-shift-semicolon = 'mode service'
 if.app-name-regex-substring = 'finder'
 run = 'layout floating'
 [[on-window-detected]]
-if.app-name-regex-substring = 'floating'
+if.app-name-regex-substring = 'exe'
 run = 'layout floating'
+[[on-window-detected]]
+if.window-title-regex-substring = 'mfloating'
+run = 'layout floating'
+# }}}
 
 
-
+# Service Mode Bindings {{{
 # 'service' binding mode declaration.
 # See: https://hillyu.github.io/Dwmac/guide#binding-modes
 [mode.service.binding]
 esc = ['reload-config', 'mode main']
-# r = ['layout tiling', 'mode main'] # reset layout
+# r = ['index', 'mode main'] # reset layout
 f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
 backspace = ['close-all-windows-but-current', 'mode main']
 
 # sticky is not yet supported https://github.com/hillyu/Dwmac/issues/2
 #s = ['layout sticky tiling', 'mode main']
 
-# mod-shift-h = ['join-with left', 'mode main']
-# mod-shift-j = ['join-with down', 'mode main']
-# mod-shift-k = ['join-with up', 'mode main']
-# mod-shift-l = ['join-with right', 'mode main']
 
 down = 'volume down'
 up = 'volume up'
 shift-down = ['volume set 0', 'mode main']
+# }}}
+
+# vim: set foldmethod=marker foldlevel=0:
