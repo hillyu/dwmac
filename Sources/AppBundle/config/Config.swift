@@ -46,6 +46,7 @@ struct Config: ConvenienceCopyable {
     var execOnWorkspaceChange: [String] = [] // todo deprecate
     var defaultMfact: Double = 0.5
     var attachBelow: Bool = false
+    var centerFloatingWindows: Bool = false
     var keyMapping = KeyMapping()
     var mod: String = "" // User defined modifier alias
     var execConfig: ExecConfig = ExecConfig()

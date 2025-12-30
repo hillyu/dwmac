@@ -39,6 +39,10 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 # Also see: https://hillyu.github.io/Dwmac/goodies#disable-hide-app
 automatically-unhide-macos-hidden-apps = false
 
+# Whether to automatically center floating windows.
+# Fallback value (if you omit the key): center-floating-windows = false
+center-floating-windows = false
+
 # List of workspaces that should stay alive even when they contain no windows,
 # even when they are invisible.
 # This config version is only available since 'config-version = 2'

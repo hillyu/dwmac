@@ -109,6 +109,7 @@ private let configParser: [String: any ParserProtocol<Config>] = [
     "exec-on-workspace-change": Parser(\.execOnWorkspaceChange, parseArrayOfStrings),
     "default-mfact": Parser(\.defaultMfact, parseFloat),
     "attach-below": Parser(\.attachBelow, parseBool),
+    "center-floating-windows": Parser(\.centerFloatingWindows, parseBool),
     "exec": Parser(\.execConfig, parseExecConfig),
 
     keyMappingConfigRootKey: Parser(\.keyMapping, skipParsing(Config().keyMapping)), // Parsed manually

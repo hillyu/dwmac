@@ -273,6 +273,10 @@ Sets the default orientation (`horizontal`, `vertical`, or `auto`) for new works
 If `true`, Dwmac will unhide applications that were hidden using Cmd+H.
 This can be useful if you don't use the macOS hiding feature and want to prevent accidental hiding.
 
+* `center-floating-windows` (default: `false`)
++
+If `true`, floating windows will be automatically centered on the screen.
+
 [#layout]
 == Layout
 

@@ -105,20 +105,31 @@ extension Window {
         let workspace = context.workspace
         let targetMonitor = workspace.workspaceMonitor
 
-        // Optimization: Only check for monitor drift if the workspace's monitor has changed
-        // since the last layout of this window.
-        // This avoids expensive AX calls (getCenter/getAxTopLeftCorner) on every layout cycle.
-        if lastLayoutMonitor?.rect.topLeftCorner != targetMonitor.rect.topLeftCorner {
-            let currentMonitor = try await getCenter()?.monitorApproximation
-            if let currentMonitor, let windowTopLeftCorner = try await getAxTopLeftCorner(), workspace != currentMonitor.activeWorkspace {
-                let xProportion = (windowTopLeftCorner.x - currentMonitor.visibleRect.topLeftX) / currentMonitor.visibleRect.width
-                let yProportion = (windowTopLeftCorner.y - currentMonitor.visibleRect.topLeftY) / currentMonitor.visibleRect.height
+        if config.centerFloatingWindows && windowId != currentlyManipulatedWithMouseWindowId {
+            if let windowSize = try await getAxSize() ?? lastFloatingSize {
+                let monitorRect = targetMonitor.visibleRect
+                let topLeft = CGPoint(
+                    x: monitorRect.topLeftX + (monitorRect.width - windowSize.width) / 2,
+                    y: monitorRect.topLeftY + (monitorRect.height - windowSize.height) / 2
+                )
+                setAxFrame(topLeft, nil)
+            }
+        } else {
+            // Optimization: Only check for monitor drift if the workspace's monitor has changed
+            // since the last layout of this window.
+            // This avoids expensive AX calls (getCenter/getAxTopLeftCorner) on every layout cycle.
+            if lastLayoutMonitor?.rect.topLeftCorner != targetMonitor.rect.topLeftCorner {
+                let currentMonitor = try await getCenter()?.monitorApproximation
+                if let currentMonitor, let windowTopLeftCorner = try await getAxTopLeftCorner(), workspace != currentMonitor.activeWorkspace {
+                    let xProportion = (windowTopLeftCorner.x - currentMonitor.visibleRect.topLeftX) / currentMonitor.visibleRect.width
+                    let yProportion = (windowTopLeftCorner.y - currentMonitor.visibleRect.topLeftY) / currentMonitor.visibleRect.height
 
-                let moveTo = workspace.workspaceMonitor
-                setAxFrame(CGPoint(
-                    x: moveTo.visibleRect.topLeftX + xProportion * moveTo.visibleRect.width,
-                    y: moveTo.visibleRect.topLeftY + yProportion * moveTo.visibleRect.height,
-                ), nil)
+                    let moveTo = workspace.workspaceMonitor
+                    setAxFrame(CGPoint(
+                        x: moveTo.visibleRect.topLeftX + xProportion * moveTo.visibleRect.width,
+                        y: moveTo.visibleRect.topLeftY + yProportion * moveTo.visibleRect.height,
+                    ), nil)
+                }
             }
         }
         lastLayoutMonitor = targetMonitor
