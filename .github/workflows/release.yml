@@ -27,9 +27,11 @@ jobs:
           brew install bash fish xcbeautify swiftly
           swiftly init --skip-install --assume-yes --verbose && swiftly install
 
+      - name: Set Version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
       - name: Build Release Artifacts
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
           # Build and sign locally (ad-hoc)
           ./build-release.sh --codesign-identity - --build-version "$VERSION"
 
@@ -43,7 +45,6 @@ jobs:
 
       - name: Generate Public Cask
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
           # Construct the public URL for the file we just released
           REPO_URL="https://github.com/${{ github.repository }}"
           ZIP_URL="$REPO_URL/releases/download/v$VERSION/Dwmac-v$VERSION.zip"
