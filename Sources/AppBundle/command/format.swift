@@ -120,6 +120,9 @@ extension String {
                 return switch f {
                     case .windowId: .success(.uint32(w.windowId))
                     case .windowIsFullscreen: .success(.bool(w.isFullscreen))
+                    case .windowIsMaster: .success(.bool(w.nodeWorkspace.flatMap { ws in
+                ws.allLeafWindowsRecursive.first(where: { !$0.isFloating })
+            } == w))
                     case .windowTitle: .success(.string(title))
                     case .windowLayout, .windowParentContainerLayout: toLayoutResult(w: w)
                 }

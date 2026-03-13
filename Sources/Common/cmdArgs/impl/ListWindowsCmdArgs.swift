@@ -134,6 +134,7 @@ public enum FormatVar: Equatable {
     public enum WindowFormatVar: String, Equatable, CaseIterable {
         case windowId = "window-id"
         case windowIsFullscreen = "window-is-fullscreen"
+        case windowIsMaster = "window-is-master"
         case windowTitle = "window-title"
         case windowLayout = "window-layout" // An alias for windowParentContainerLayout
         case windowParentContainerLayout = "window-parent-container-layout"
