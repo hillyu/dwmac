@@ -38,6 +38,8 @@ struct LayoutCommand: Command {
                     return true
                 }
                 return false
+            case .monocle:
+                return changeTilingLayout(io, targetLayout: .monocle, targetOrientation: nil, window: window)
         }
     }
 }
@@ -64,6 +66,7 @@ extension Window {
             case .master_stack: !isFloating && workspace.layout == .masterStack
             case .h_master_stack: !isFloating && workspace.layout == .masterStack && workspace.orientation == .h
             case .v_master_stack: !isFloating && workspace.layout == .masterStack && workspace.orientation == .v
+            case .monocle: !isFloating && workspace.layout == .monocle
         }
     }
 }

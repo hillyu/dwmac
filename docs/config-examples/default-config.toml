@@ -12,7 +12,7 @@ after-startup-command = []
 # Start Dwmac at login
 start-at-login = false
 
-# Possible values: master-stack
+# Possible values: master-stack | monocle
 default-root-container-layout = 'master-stack'
 
 # mfact for master-stack

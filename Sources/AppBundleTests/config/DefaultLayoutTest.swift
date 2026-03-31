@@ -14,6 +14,16 @@ final class DefaultLayoutTest: XCTestCase {
         XCTAssertEqual(config.defaultRootContainerLayout, .masterStack)
     }
 
+    func testParseMonocleLayout() {
+        let (config, errors) = parseConfig(
+            """
+            default-root-container-layout = 'monocle'
+            """,
+        )
+        XCTAssertEqual(errors, [])
+        XCTAssertEqual(config.defaultRootContainerLayout, .monocle)
+    }
+
     func testParseDefaultLayoutInvalid() {
         let (_, errors) = parseConfig(
             """
