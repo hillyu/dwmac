@@ -21,8 +21,17 @@ public final class TrayMenuModel: ObservableObject {
     TrayMenuModel.shared.trayText = (activeMode?.takeIf { $0 != mainModeId }?.first.map { "[\($0.uppercased())] " } ?? "") +
         sortedMonitors
         .map {
-            let hasFullscreenWindows = $0.activeWorkspace.allLeafWindowsRecursive.contains { $0.isFullscreen }
-            let activeWorkspaceName = hasFullscreenWindows ? "(\($0.activeWorkspace.name))" : $0.activeWorkspace.name
+            let ws = $0.activeWorkspace
+            let hasFullscreenWindows = ws.allLeafWindowsRecursive.contains { $0.isFullscreen }
+            let isMonocle = ws.layout == .monocle
+            let activeWorkspaceName: String
+            if isMonocle {
+                activeWorkspaceName = "[M \(ws.tilingWindows.count)] \(ws.name)"
+            } else if hasFullscreenWindows {
+                activeWorkspaceName = "(\(ws.name))"
+            } else {
+                activeWorkspaceName = ws.name
+            }
             return ($0.activeWorkspace == focus.workspace && sortedMonitors.count > 1 ? "*" : "") + activeWorkspaceName
         }
         .joined(separator: " │ ")
@@ -43,20 +52,24 @@ public final class TrayMenuModel: ObservableObject {
             isEffectivelyEmpty: $0.isEffectivelyEmpty,
             isVisible: $0.isVisible,
             hasFullscreenWindows: hasFullscreenWindows,
+            isMonocle: $0.layout == .monocle,
+            tilingWindowCount: $0.tilingWindows.count,
             appBundleIds: Array(appBundleIds).sorted(),
         )
     }
     var items = sortedMonitors.map {
-        let hasFullscreenWindows = $0.activeWorkspace.allLeafWindowsRecursive.contains { $0.isFullscreen }
+        let ws = $0.activeWorkspace
+        let hasFullscreenWindows = ws.allLeafWindowsRecursive.contains { $0.isFullscreen }
         return TrayItem(
             type: .workspace,
-            name: $0.activeWorkspace.name,
-            isActive: $0.activeWorkspace == focus.workspace,
+            name: ws.name,
+            isActive: ws == focus.workspace,
             hasFullscreenWindows: hasFullscreenWindows,
+            isMonocle: ws.layout == .monocle,
         )
     }
     let mode = activeMode?.takeIf { $0 != mainModeId }?.first.map {
-        TrayItem(type: .mode, name: $0.uppercased(), isActive: true, hasFullscreenWindows: false)
+        TrayItem(type: .mode, name: $0.uppercased(), isActive: true, hasFullscreenWindows: false, isMonocle: false)
     }
     if let mode {
         items.insert(mode, at: 0)
@@ -71,6 +84,8 @@ struct WorkspaceViewModel: Hashable {
     let isEffectivelyEmpty: Bool
     let isVisible: Bool
     let hasFullscreenWindows: Bool
+    let isMonocle: Bool
+    let tilingWindowCount: Int
     let appBundleIds: [String]
 }
 
@@ -86,6 +101,7 @@ struct TrayItem: Hashable, Identifiable {
     let name: String
     let isActive: Bool
     let hasFullscreenWindows: Bool
+    let isMonocle: Bool
     var systemImageName: String? {
         // System image type is only valid for numbers 0 to 50 and single capital char workspace name
         if let number = Int(name) {

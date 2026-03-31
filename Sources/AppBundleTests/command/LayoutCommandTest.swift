@@ -14,7 +14,7 @@ final class LayoutCommandTest: XCTestCase {
 
         testParseCommandFail("layout foo", msg: """
             ERROR: Can't parse 'foo'
-                   Possible values: (master-stack|horizontal|vertical|h_master-stack|v_master-stack|tiling|floating)
+                   Possible values: (master-stack|horizontal|vertical|h_master-stack|v_master-stack|tiling|floating|monocle)
             """)
     }
 

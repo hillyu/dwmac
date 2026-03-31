@@ -49,7 +49,7 @@ let fullscreen_help_generated = """
     """
 let layout_help_generated = """
     USAGE: layout [-h|--help] [--window-id <window-id>]
-                  (h_master-stack|v_master-stack|master-stack|horizontal|vertical|tiling|floating)...
+                  (h_master-stack|v_master-stack|master-stack|horizontal|vertical|tiling|floating|monocle)...
     """
 let list_apps_help_generated = """
     USAGE: list-apps [-h|--help] [--macos-native-hidden [no]] [--format <output-format>] [--count] [--json]

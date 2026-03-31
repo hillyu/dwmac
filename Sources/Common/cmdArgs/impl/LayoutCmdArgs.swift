@@ -22,7 +22,7 @@ public struct LayoutCmdArgs: CmdArgs {
         case master_stack = "master-stack"
         case horizontal, vertical
         case h_master_stack = "h_master-stack", v_master_stack = "v_master-stack"
-        case tiling, floating
+        case tiling, floating, monocle
     }
 }
 

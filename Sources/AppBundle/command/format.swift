@@ -166,6 +166,7 @@ private func toLayoutString(w: Workspace) -> String {
         case (.masterStack, .h): return LayoutCmdArgs.LayoutDescription.h_master_stack.rawValue
         case (.masterStack, .v): return LayoutCmdArgs.LayoutDescription.v_master_stack.rawValue
         case (.floating, _): return LayoutCmdArgs.LayoutDescription.floating.rawValue
+        case (.monocle, _): return LayoutCmdArgs.LayoutDescription.monocle.rawValue
     }
 }
 

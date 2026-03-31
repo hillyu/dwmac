@@ -65,6 +65,7 @@ struct MenuBarLabel: View {
                             name: item.name,
                             isActive: item.isFocused,
                             hasFullscreenWindows: item.hasFullscreenWindows,
+                            isMonocle: item.isMonocle,
                         )
                         itemView(for: trayItem)
                             .opacity(item.isVisible ? 1 : 0.5)
@@ -82,6 +83,7 @@ struct MenuBarLabel: View {
                             name: item.name,
                             isActive: item.isFocused,
                             hasFullscreenWindows: item.hasFullscreenWindows,
+                            isMonocle: item.isMonocle,
                         )
                         HStack(spacing: 4) {
                             itemView(for: trayItem)
@@ -135,7 +137,7 @@ struct MenuBarLabel: View {
                 .bold()
                 .padding(.bottom, 6)
             ForEach(otherWorkspaces, id: \.name) { item in
-                itemView(for: TrayItem(type: .workspace, name: item.name, isActive: false, hasFullscreenWindows: item.hasFullscreenWindows))
+                itemView(for: TrayItem(type: .workspace, name: item.name, isActive: false, hasFullscreenWindows: item.hasFullscreenWindows, isMonocle: item.isMonocle))
             }
         }
         .opacity(0.6)

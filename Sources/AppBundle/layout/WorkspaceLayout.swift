@@ -27,6 +27,19 @@ extension Workspace {
             return
         }
 
+        if layout == .monocle {
+            let monitorRect = context.workspace.workspaceMonitor.visibleRectPaddedByOuterGaps
+            for window in windows {
+                if window.windowId != currentlyManipulatedWithMouseWindowId {
+                    window.lastAppliedLayoutVirtualRect = virtual
+                    window.lastAppliedLayoutPhysicalRect = nil
+                    window.isFullscreen = false
+                    window.setAxFrame(monitorRect.topLeftCorner, CGSize(width: monitorRect.width, height: monitorRect.height))
+                }
+            }
+            return
+        }
+
         if windows.count == 1 {
             let window = windows[0]
             try await layoutWindow(window, point, width, height, virtual, context)

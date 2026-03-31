@@ -70,6 +70,29 @@ final class WorkspaceLayoutTest: XCTestCase {
         XCTAssertEqual(w2.lastAppliedLayoutPhysicalRect?.height, 534.5)
     }
 
+    func testLayoutMonocle() async throws {
+        config.gaps = Gaps(
+            inner: .zero,
+            outer: .zero,
+        )
+
+        let workspace = Workspace.get(byName: "testMonocle")
+        workspace.layout = .monocle
+
+        let initialRect = Rect(topLeftX: 0, topLeftY: 0, width: 100, height: 100)
+        let w1 = TestWindow.new(id: 1, parent: workspace, rect: initialRect)
+        let w2 = TestWindow.new(id: 2, parent: workspace, rect: initialRect)
+        let w3 = TestWindow.new(id: 3, parent: workspace, rect: initialRect)
+
+        try await workspace.layoutWorkspace()
+
+        // All windows should be fullscreen-sized (1920x1079) with no physical rect tracked
+        for window in [w1, w2, w3] {
+            XCTAssertNil(window.lastAppliedLayoutPhysicalRect)
+            XCTAssertFalse(window.isFullscreen)
+        }
+    }
+
     func testLayoutMasterStackRightMaster() async throws {
         config.gaps = Gaps(
             inner: .init(vertical: 10, horizontal: 10),
